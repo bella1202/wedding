@@ -93,8 +93,8 @@ if ($tmapUrl === '') {
                 title="<?= e($phone) ?>"
             >
                 <span class="location__actionIcon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6.6 3.8c.5-.5 1.3-.5 1.8 0l1.5 1.5c.5.5.5 1.3 0 1.8l-1 1a13.2 13.2 0 005 5l1-1c.5-.5 1.3-.5 1.8 0l1.5 1.5c.5.5.5 1.3 0 1.8l-.8.8c-.6.6-1.5.9-2.4.7-2.2-.4-4.8-1.9-7.1-4.2S5.2 9.1 4.8 6.9c-.2-.9.1-1.8.7-2.4l.8-.7z"/>
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.4 21 3 13.6 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.02l-2.2 2.19z"/>
                     </svg>
                 </span>
             </a>

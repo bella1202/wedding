@@ -1358,11 +1358,10 @@ body.isMenuOpen {
 }
 
 .location__action--call {
-  background: var(--accent-soft);
-  color: var(--accent);
-  border: 1px solid rgba(224, 145, 163, 0.35);
-  border-radius: 50%;
-  box-shadow: none;
+  background: linear-gradient(160deg, #5ad46a 0%, #30c050 48%, #28a745 100%);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 6px 16px rgba(34, 34, 34, 0.12);
 }
 
 .location__action--kakao,
