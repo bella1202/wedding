@@ -90,10 +90,10 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
     require __DIR__ . '/includes/components/gallery.php';
     require __DIR__ . '/includes/components/letter.php';
     require __DIR__ . '/includes/components/location.php';
+    require __DIR__ . '/includes/components/guestbook.php';
     require __DIR__ . '/includes/components/account.php';
     require __DIR__ . '/includes/components/contact.php';
     require __DIR__ . '/includes/components/share.php';
-    require __DIR__ . '/includes/components/guestbook.php';
     require __DIR__ . '/includes/components/ending.php';
     ?>
 </div>
