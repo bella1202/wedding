@@ -58,7 +58,13 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
                 <span class="siteMenu__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5.5-5.5L7 19"/></svg>
                 </span>
-                <span class="siteMenu__label">사진</span>
+                <span class="siteMenu__label">갤러리</span>
+            </button>
+            <button type="button" class="siteMenu__item touchBtn" data-nav-target="letter">
+                <span class="siteMenu__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
+                </span>
+                <span class="siteMenu__label">초대</span>
             </button>
             <button type="button" class="siteMenu__item touchBtn" data-nav-target="location">
                 <span class="siteMenu__icon" aria-hidden="true">
@@ -67,12 +73,6 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
                 <span class="siteMenu__label">오시는 길</span>
             </button>
             <button type="button" class="siteMenu__item touchBtn" data-nav-target="guestbook">
-                <span class="siteMenu__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4h11a2 2 0 012 2v14l-3-2-3 2-3-2-3 2V6a2 2 0 012-2z"/><path d="M9 9h6M9 13h4"/></svg>
-                </span>
-                <span class="siteMenu__label">방명록</span>
-            </button>
-            <button type="button" class="siteMenu__item touchBtn" data-nav-target="account">
                 <span class="siteMenu__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-7-9.2A3.8 3.8 0 0112 8.2a3.8 3.8 0 017 2.6C19 15.6 12 20 12 20z"/></svg>
                 </span>

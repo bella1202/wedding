@@ -20,11 +20,21 @@
   }
 
   function formatDate(iso) {
-    if (!iso) return "SEP 25, 2027";
-    var d = new Date(iso.replace(" ", "T"));
+    if (!iso) return "";
+    var d = new Date(String(iso).replace(" ", "T"));
     if (Number.isNaN(d.getTime())) return iso;
-    var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    return months[d.getMonth()] + " " + String(d.getDate()).padStart(2, "0") + ", " + d.getFullYear();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return y + "." + m + "." + day;
+  }
+
+  function lockScroll(on) {
+    if (window.weddingCommon && window.weddingCommon.lockScroll) {
+      window.weddingCommon.lockScroll(on);
+      return;
+    }
+    document.body.classList.toggle("isScrollLocked", !!on);
   }
 
   function showToast() {
@@ -35,7 +45,7 @@
     setTimeout(function () {
       toast.classList.remove("isShow");
       toast.hidden = true;
-    }, 1500);
+    }, 1600);
   }
 
   function setError(el, msg) {
@@ -49,6 +59,97 @@
     el.textContent = msg;
   }
 
+  function openWriteSheet() {
+    var sheet = qs("[data-guestbook-sheet]");
+    if (!sheet) return;
+    sheet.hidden = false;
+    sheet.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(function () {
+      sheet.classList.add("isOpen");
+    });
+    lockScroll(true);
+    var nameInput = sheet.querySelector('input[name="name"]');
+    if (nameInput) setTimeout(function () { nameInput.focus(); }, 280);
+  }
+
+  function closeWriteSheet() {
+    var sheet = qs("[data-guestbook-sheet]");
+    if (!sheet) return;
+    sheet.classList.remove("isOpen");
+    lockScroll(false);
+    window.setTimeout(function () {
+      if (!sheet.classList.contains("isOpen")) {
+        sheet.hidden = true;
+        sheet.setAttribute("aria-hidden", "true");
+      }
+    }, 320);
+  }
+
+  function playDeliverAnimation(done) {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      done();
+      return;
+    }
+
+    var couple = qs("[data-floating-couple]");
+    var writeBtn = qs("[data-guestbook-write]");
+    var box = qs(".guestbookBox");
+    var startEl = writeBtn || box;
+    if (!startEl) {
+      done();
+      return;
+    }
+
+    var start = startEl.getBoundingClientRect();
+    var targetEl = couple && !couple.classList.contains("isHidden") ? couple : box;
+    if (!targetEl) {
+      done();
+      return;
+    }
+    var end = targetEl.getBoundingClientRect();
+
+    var flyer = document.createElement("div");
+    flyer.className = "guestbookFlyer";
+    flyer.innerHTML =
+      '<div class="guestbookFlyer__note">' +
+      '<span class="guestbookFlyer__fold"></span>' +
+      "<span>♥</span>" +
+      "</div>";
+    document.body.appendChild(flyer);
+
+    var startX = start.left + start.width / 2 - 28;
+    var startY = start.top + start.height / 2 - 28;
+    var endX = end.left + end.width / 2 - 28;
+    var endY = end.top + end.height * 0.35 - 28;
+
+    flyer.style.left = startX + "px";
+    flyer.style.top = startY + "px";
+
+    requestAnimationFrame(function () {
+      flyer.classList.add("isFold");
+      window.setTimeout(function () {
+        flyer.classList.add("isFly");
+        flyer.style.left = endX + "px";
+        flyer.style.top = endY + "px";
+      }, 220);
+    });
+
+    window.setTimeout(function () {
+      flyer.classList.add("isGone");
+      if (box) {
+        box.classList.add("isCatch");
+        window.setTimeout(function () {
+          box.classList.remove("isCatch");
+        }, 500);
+      }
+      window.setTimeout(function () {
+        flyer.remove();
+        done();
+      }, 280);
+    }, 980);
+  }
+
   function renderItem(item, prepend) {
     var list = qs("[data-guestbook-list]");
     var empty = qs("[data-guestbook-empty]");
@@ -60,6 +161,7 @@
     article.className = "guestbookNote";
     article.setAttribute("data-guestbook-id", String(item.id));
     article.innerHTML =
+      '<div class="guestbookNote__pin" aria-hidden="true"></div>' +
       '<div class="guestbookNote__top">' +
       '<p class="guestbookNote__name"></p>' +
       '<button type="button" class="guestbookNote__menu touchBtn" data-guestbook-menu aria-label="메뉴">•••</button>' +
@@ -74,8 +176,12 @@
     article.querySelector(".guestbookNote__message").textContent = item.message;
     article.querySelector(".guestbookNote__date").textContent = formatDate(item.created_at);
 
-    if (prepend) list.prepend(article);
-    else list.appendChild(article);
+    if (prepend) {
+      list.prepend(article);
+      article.classList.add("isArrive");
+    } else {
+      list.appendChild(article);
+    }
 
     requestAnimationFrame(function () {
       article.classList.add("isVisible");
@@ -116,6 +222,28 @@
       .catch(function () {
         setError(qs("[data-guestbook-error]"), "방명록을 불러오지 못했습니다.");
       });
+  }
+
+  function initWriteSheet() {
+    var sheet = qs("[data-guestbook-sheet]");
+    if (!sheet) return;
+
+    if (sheet.parentElement !== document.body) {
+      document.body.appendChild(sheet);
+    }
+
+    var writeBtn = qs("[data-guestbook-write]");
+    if (writeBtn) writeBtn.addEventListener("click", openWriteSheet);
+
+    sheet.querySelectorAll("[data-guestbook-sheet-close]").forEach(function (el) {
+      el.addEventListener("click", closeWriteSheet);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && sheet.classList.contains("isOpen")) {
+        closeWriteSheet();
+      }
+    });
   }
 
   function initForm() {
@@ -169,12 +297,14 @@
             setError(errorEl, (res.data && res.data.error) || "저장에 실패했습니다.");
             return;
           }
+
           form.reset();
-          if (document.activeElement && document.activeElement.blur) {
-            document.activeElement.blur();
-          }
-          renderItem(res.data.item, true);
-          showToast();
+          closeWriteSheet();
+
+          playDeliverAnimation(function () {
+            renderItem(res.data.item, true);
+            showToast();
+          });
         })
         .catch(function () {
           setError(errorEl, "저장에 실패했습니다.");
@@ -191,6 +321,10 @@
     var modal = qs("[data-guestbook-delete-modal]");
     if (!list || !modal) return;
 
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
     list.addEventListener("click", function (e) {
       var menu = e.target.closest("[data-guestbook-menu]");
       if (menu) {
@@ -206,20 +340,30 @@
         deletingId = note2 ? parseInt(note2.getAttribute("data-guestbook-id"), 10) : null;
         modal.hidden = false;
         modal.setAttribute("aria-hidden", "false");
-        if (window.weddingCommon) window.weddingCommon.lockScroll(true);
+        requestAnimationFrame(function () {
+          modal.classList.add("isOpen");
+        });
+        lockScroll(true);
         setError(qs("[data-guestbook-delete-error]"), "");
         var pw = qs("[data-guestbook-delete-password]");
         if (pw) pw.value = "";
       }
     });
 
+    function closeDeleteModal() {
+      modal.classList.remove("isOpen");
+      lockScroll(false);
+      window.setTimeout(function () {
+        if (!modal.classList.contains("isOpen")) {
+          modal.hidden = true;
+          modal.setAttribute("aria-hidden", "true");
+        }
+      }, 280);
+      deletingId = null;
+    }
+
     modal.querySelectorAll("[data-guestbook-delete-close]").forEach(function (el) {
-      el.addEventListener("click", function () {
-        modal.hidden = true;
-        modal.setAttribute("aria-hidden", "true");
-        if (window.weddingCommon) window.weddingCommon.lockScroll(false);
-        deletingId = null;
-      });
+      el.addEventListener("click", closeDeleteModal);
     });
 
     var confirm = qs("[data-guestbook-delete-confirm]");
@@ -250,14 +394,17 @@
               return;
             }
             var node = list.querySelector('[data-guestbook-id="' + deletingId + '"]');
-            if (node) node.remove();
-            if (!list.querySelector(".guestbookNote")) {
-              var empty = qs("[data-guestbook-empty]");
-              if (empty) empty.hidden = false;
+            if (node) {
+              node.classList.add("isLeave");
+              window.setTimeout(function () {
+                node.remove();
+                if (!list.querySelector(".guestbookNote")) {
+                  var empty = qs("[data-guestbook-empty]");
+                  if (empty) empty.hidden = false;
+                }
+              }, 280);
             }
-            modal.hidden = true;
-            if (window.weddingCommon) window.weddingCommon.lockScroll(false);
-            deletingId = null;
+            closeDeleteModal();
           })
           .catch(function () {
             setError(err, "삭제에 실패했습니다.");
@@ -267,7 +414,8 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    if (!qs("[data-guestbook-form]")) return;
+    if (!qs("[data-guestbook-write]") && !qs("[data-guestbook-form]")) return;
+    initWriteSheet();
     initForm();
     initListActions();
     loadMessages(true);

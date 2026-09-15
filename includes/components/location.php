@@ -4,18 +4,32 @@
 
 $loc = $weddingData['location'] ?? [];
 $w = $weddingData['wedding'];
-$t = $weddingData['transportation'];
+$t = $weddingData['transportation'] ?? [];
 
 $venueName = $loc['name'] ?? $w['venue'];
 $address = $loc['address'] ?? $w['address'];
+$phone = $loc['phone'] ?? '';
 $lat = $loc['latitude'] ?? null;
 $lng = $loc['longitude'] ?? null;
 $kakaoMapUrl = $loc['kakaoMapUrl'] ?? '';
 $naverMapUrl = $loc['naverMapUrl'] ?? '';
+$tmapUrl = $loc['tmapUrl'] ?? '';
+
+$subway = $t['subway'] ?? '';
+$busLines = $t['bus'] ?? [];
+if (is_string($busLines) && $busLines !== '') {
+    $busLines = [$busLines];
+}
+if (!is_array($busLines)) {
+    $busLines = [];
+}
+$parking = $t['parking'] ?? '주차';
+$parkingNote = $t['parkingNote'] ?? '';
 
 $hasCoords = $lat !== null && $lng !== null && $lat !== '' && $lng !== '';
 $hasKakaoKey = !empty($kakaoJavaScriptKey);
 $canRenderMap = $hasKakaoKey && $hasCoords;
+$phoneTel = $phone !== '' ? preg_replace('/\D+/', '', $phone) : '';
 
 if ($kakaoMapUrl === '') {
     $kakaoMapUrl = 'https://map.kakao.com/?q=' . rawurlencode($venueName . ' ' . $address);
@@ -23,12 +37,35 @@ if ($kakaoMapUrl === '') {
 if ($naverMapUrl === '') {
     $naverMapUrl = 'https://map.naver.com/v5/search/' . rawurlencode($venueName . ' ' . $address);
 }
+if ($tmapUrl === '') {
+    if ($hasCoords) {
+        $tmapUrl = 'tmap://route?goalname=' . rawurlencode($venueName)
+            . '&goalx=' . rawurlencode((string) $lng)
+            . '&goaly=' . rawurlencode((string) $lat);
+    } else {
+        $tmapUrl = 'tmap://search?name=' . rawurlencode($venueName . ' ' . $address);
+    }
+}
 ?>
 <section class="scene scene--location scene--flow" data-scene="location" data-couple-state="heart" id="location">
     <p class="sceneLabel">오시는 길</p>
-    <h2 class="location__venueEn"><?= e($venueName) ?></h2>
-    <p class="location__venue"><?= e($w['venueEn'] ?? '') ?></p>
-    <p class="location__address"><?= e($address) ?></p>
+
+    <div class="location__head">
+        <h2 class="location__venue"><?= e($venueName) ?></h2>
+
+        <div class="location__addressRow">
+            <p class="location__address"><?= e($address) ?></p>
+            <button
+                type="button"
+                class="location__copyBadge touchBtn"
+                data-copy-target="<?= e($address) ?>"
+                data-copy-default="복사"
+                aria-label="주소 복사"
+            >
+                <span data-copy-label>복사</span>
+            </button>
+        </div>
+    </div>
 
     <div
         class="kakaoMap"
@@ -47,22 +84,98 @@ if ($naverMapUrl === '') {
         </div>
     </div>
 
-    <p class="location__meta">
-        <span><?= e($w['day']) ?></span>
-        <span><?= e($w['displayTime']) ?></span>
-    </p>
-
-    <div class="location__actions">
-        <a class="location__action touchBtn" href="<?= e($kakaoMapUrl) ?>" target="_blank" rel="noopener noreferrer">카카오맵에서 보기</a>
-        <a class="location__action touchBtn" href="<?= e($naverMapUrl) ?>" target="_blank" rel="noopener noreferrer">네이버지도에서 보기</a>
-        <button type="button" class="location__action touchBtn" data-copy-target="<?= e($address) ?>">
-            <span data-copy-label>주소 복사</span>
-        </button>
+    <div class="location__actions" role="group" aria-label="전화 및 지도 앱">
+        <?php if ($phone !== ''): ?>
+            <a
+                class="location__action location__action--call touchBtn"
+                href="tel:<?= e($phoneTel) ?>"
+                aria-label="<?= e($venueName) ?>에 전화하기 <?= e($phone) ?>"
+                title="<?= e($phone) ?>"
+            >
+                <span class="location__actionIcon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6.6 3.8c.5-.5 1.3-.5 1.8 0l1.5 1.5c.5.5.5 1.3 0 1.8l-1 1a13.2 13.2 0 005 5l1-1c.5-.5 1.3-.5 1.8 0l1.5 1.5c.5.5.5 1.3 0 1.8l-.8.8c-.6.6-1.5.9-2.4.7-2.2-.4-4.8-1.9-7.1-4.2S5.2 9.1 4.8 6.9c-.2-.9.1-1.8.7-2.4l.8-.7z"/>
+                    </svg>
+                </span>
+            </a>
+        <?php endif; ?>
+        <a
+            class="location__action location__action--kakao touchBtn"
+            href="<?= e($kakaoMapUrl) ?>"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="카카오맵에서 보기"
+            title="카카오맵"
+        >
+            <img
+                class="location__actionImg"
+                src="<?= e(assetUrl('/assets/images/map/kakaomap.png')) ?>"
+                alt=""
+                width="52"
+                height="52"
+                decoding="async"
+            >
+        </a>
+        <a
+            class="location__action location__action--naver touchBtn"
+            href="<?= e($naverMapUrl) ?>"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="네이버지도에서 보기"
+            title="네이버지도"
+        >
+            <img
+                class="location__actionImg"
+                src="<?= e(assetUrl('/assets/images/map/navermap.png')) ?>"
+                alt=""
+                width="52"
+                height="52"
+                decoding="async"
+            >
+        </a>
+        <a
+            class="location__action location__action--tmap touchBtn"
+            href="<?= e($tmapUrl) ?>"
+            aria-label="티맵에서 보기"
+            title="티맵"
+        >
+            <img
+                class="location__actionImg"
+                src="<?= e(assetUrl('/assets/images/map/tmap.png')) ?>"
+                alt=""
+                width="52"
+                height="52"
+                decoding="async"
+            >
+        </a>
     </div>
 
-    <ul class="location__transport">
-        <li><span>주차</span><?= e($t['parking']) ?></li>
-        <li><span>지하철</span><?= e($t['subway']) ?></li>
-        <li><span>버스</span><?= e($t['bus']) ?></li>
-    </ul>
+    <div class="locationGuide">
+        <?php if ($subway !== ''): ?>
+            <article class="locationGuide__item">
+                <h3 class="locationGuide__label">지하철</h3>
+                <p class="locationGuide__text"><?= e($subway) ?></p>
+            </article>
+        <?php endif; ?>
+
+        <?php if (!empty($busLines)): ?>
+            <article class="locationGuide__item">
+                <h3 class="locationGuide__label">버스</h3>
+                <ul class="locationGuide__list">
+                    <?php foreach ($busLines as $line): ?>
+                        <li><?= e($line) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </article>
+        <?php endif; ?>
+
+        <?php if ($parkingNote !== '' || $parking !== ''): ?>
+            <article class="locationGuide__item">
+                <h3 class="locationGuide__label"><?= e($parking !== '' ? $parking : '주차') ?></h3>
+                <?php if ($parkingNote !== ''): ?>
+                    <p class="locationGuide__text"><?= e($parkingNote) ?></p>
+                <?php endif; ?>
+            </article>
+        <?php endif; ?>
+    </div>
 </section>

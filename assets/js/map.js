@@ -183,7 +183,7 @@
           msg =
             "카카오 웹 도메인 미등록: Developers → 앱 설정 → 플랫폼 → Web에 「" +
             host +
-            "」를 추가하세요. (예: test.local)";
+            "」를 추가하세요.";
         }
         showFallback(root, msg);
       });

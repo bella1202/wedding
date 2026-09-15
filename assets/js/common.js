@@ -23,11 +23,15 @@
 
         function onSuccess() {
           btn.classList.add("isCopied");
-          if (label) label.textContent = "✓ 복사되었습니다";
+          if (label) {
+            label.textContent = btn.getAttribute("data-copy-done") || "✓ 복사됨";
+          }
           setTimeout(function () {
             btn.classList.remove("isCopied");
             if (label) {
-              label.textContent = btn.classList.contains("accountRow") ? "터치하여 복사" : "주소 복사";
+              label.textContent =
+                btn.getAttribute("data-copy-default") ||
+                (btn.classList.contains("accountRow") ? "터치하여 복사" : "주소 복사");
             }
           }, 1500);
         }

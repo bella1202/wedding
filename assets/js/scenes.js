@@ -232,9 +232,9 @@
     var sectionIds = [
       "weddingDate",
       "gallery",
+      "letter",
       "location",
       "guestbook",
-      "account",
     ];
     var sections = sectionIds
       .map(function (id) {
@@ -272,6 +272,18 @@
           return;
         }
 
+        var bestId = best.id || best.getAttribute("data-scene");
+        // 계좌/연락/공유는 방명록 구간에 이어지므로 같은 메뉴 활성화
+        if (
+          bestId === "account" ||
+          best.getAttribute("data-scene") === "account" ||
+          best.getAttribute("data-scene") === "contact" ||
+          best.getAttribute("data-scene") === "share"
+        ) {
+          setActive("guestbook");
+          return;
+        }
+
         var matched = sectionIds.find(function (id) {
           return best.id === id || best.getAttribute("data-scene") === id;
         });
@@ -282,6 +294,14 @@
         rootMargin: "-20% 0px -35% 0px",
       }
     );
+
+    // 계좌·연락·공유도 관찰해서 마음 전하기 메뉴 활성화 유지
+    ["account", "contact", "share"].forEach(function (id) {
+      var el =
+        document.getElementById(id) ||
+        document.querySelector('[data-scene="' + id + '"]');
+      if (el) sections.push(el);
+    });
 
     sections.forEach(function (section) {
       io.observe(section);
