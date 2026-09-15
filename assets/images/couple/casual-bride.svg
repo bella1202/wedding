@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="320" viewBox="0 0 200 320">
+  <rect width="200" height="320" fill="#171412"/>
+  <circle cx="100" cy="88" r="28" fill="#9a8878" opacity="0.85"/>
+  <ellipse cx="100" cy="210" rx="48" ry="70" fill="#d9c7b8" opacity="0.9"/>
+  <text x="100" y="300" text-anchor="middle" fill="#f5f0e8" font-family="Georgia, serif" font-size="10" letter-spacing="0.2em" opacity="0.45">CASUAL</text>
+</svg>

@@ -1,0 +1,48 @@
+<?php
+/** @var array $weddingData */
+$accounts = $weddingData['accounts'];
+$hasGroom = !empty($accounts['groom']);
+$hasBride = !empty($accounts['bride']);
+?>
+<section class="scene scene--account scene--flow" data-scene="account" data-couple-state="heart" id="account">
+    <button type="button" class="accountSheet__open touchBtn" data-account-open>마음 전하실 곳</button>
+    <div class="accountSheet" data-account-sheet hidden aria-hidden="true">
+        <div class="accountSheet__backdrop" data-account-close></div>
+        <div class="accountSheet__panel">
+            <button type="button" class="accountSheet__close touchBtn" data-account-close aria-label="닫기">&times;</button>
+            <p class="accountSheet__title">마음 전하실 곳</p>
+            <div class="accountSheet__tabs" role="tablist">
+                <button type="button" class="accountSheet__tab isActive touchBtn" data-account-tab="groom" role="tab" aria-selected="true">신랑측</button>
+                <button type="button" class="accountSheet__tab touchBtn" data-account-tab="bride" role="tab" aria-selected="false">신부측</button>
+            </div>
+            <div class="accountSheet__content" data-account-panel="groom">
+                <?php if (!$hasGroom): ?>
+                    <p class="accountSheet__empty">계좌 정보 입력 예정</p>
+                <?php else: ?>
+                    <?php foreach ($accounts['groom'] as $acc): ?>
+                        <button type="button" class="accountRow touchBtn" data-copy-target="<?= e($acc['number'] ?? '') ?>">
+                            <span><?= e($acc['bank'] ?? '') ?></span>
+                            <span><?= e($acc['number'] ?? '') ?></span>
+                            <span><?= e($acc['holder'] ?? '') ?></span>
+                            <span class="accountRow__hint" data-copy-label>터치하여 복사</span>
+                        </button>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <div class="accountSheet__content" data-account-panel="bride" hidden>
+                <?php if (!$hasBride): ?>
+                    <p class="accountSheet__empty">계좌 정보 입력 예정</p>
+                <?php else: ?>
+                    <?php foreach ($accounts['bride'] as $acc): ?>
+                        <button type="button" class="accountRow touchBtn" data-copy-target="<?= e($acc['number'] ?? '') ?>">
+                            <span><?= e($acc['bank'] ?? '') ?></span>
+                            <span><?= e($acc['number'] ?? '') ?></span>
+                            <span><?= e($acc['holder'] ?? '') ?></span>
+                            <span class="accountRow__hint" data-copy-label>터치하여 복사</span>
+                        </button>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</section>

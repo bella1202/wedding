@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+
+storage/database.sqlite
+storage/*.sqlite
+storage/*.sqlite-journal
+
+.DS_Store
+Thumbs.db
