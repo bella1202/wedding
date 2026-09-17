@@ -34,37 +34,34 @@ return [
     ],
 
     'invitation' => [
-        'title' => '저희 두 사람, 결혼합니다.',
-        'letterCaption' => '초대합니다',
+        'title' => '소중한 분들을 초대합니다',
+        'quoteEn' => [
+            'And the more we try to understand one another,',
+            'the more exceptional each of us will be.',
+        ],
+        'quoteKo' => [
+            '서로를 이해하려고 노력할수록',
+            '우리는 더 특별한 존재가 될 거예요.',
+        ],
+        'quoteCredit' => 'Zootopia, Judy Hopps',
         'lines' => [
-            '서로 다른 두 사람이 만나',
-            '같은 방향을 바라보며',
-            '함께 걸어가려 합니다.',
+            '서로를 향한 변함없는 믿음으로',
+            '한 곳을 바라보며 평생을 함께하고자 합니다.',
         ],
         'closing' => [
-            '소중한 날,',
-            '함께해 주시면 감사하겠습니다.',
+            '저희 두 사람이 걸어갈 소중한 날에 귀한 걸음으로',
+            '축복해 주시면 감사하겠습니다.',
         ],
-        'message' => '초대 문구 입력 예정',
-        'note' => '초대 문구 입력 예정',
     ],
 
     'gallery' => [
         '/assets/images/placeholder/01.svg',
         '/assets/images/placeholder/02.svg',
         '/assets/images/placeholder/03.svg',
-        '/assets/images/placeholder/04.svg',
-        '/assets/images/placeholder/05.svg',
-        '/assets/images/placeholder/06.svg',
     ],
 
     'polaroidMessages' => [
         '우리의 한 장면',
-        '좋아하는 순간',
-        '작은 기억',
-        '우리의 한 장면',
-        '좋아하는 순간',
-        '작은 기억',
     ],
 
     'outfit' => [
@@ -89,11 +86,11 @@ return [
     ],
 
     'transportation' => [
-        'subway' => '지하철 신사역(3호선/신분당선) 6번출구 300m 도보 5분',
+        'subway' => '신사역(3호선/신분당선) 6번출구 300m 도보 5분',
         'bus' => [
-            '간선 145, 402, 542 — 신사사거리, 신사역 정류장',
-            '지선 4212, 4312 — 신사사거리, 가로수길 정류장',
-            '광역 3030, 3600 — 신사역(중), 가로수길 정류장',
+            '간선 145, 402, 542 - 신사사거리, 신사역 정류장',
+            '지선 4212, 4312 - 신사사거리, 가로수길 정류장',
+            '광역 3030, 3600 - 신사역(중), 가로수길 정류장',
         ],
         'parking' => '주차',
         'parkingNote' => '본관 B3층부터 B5층까지 주차가능 (2시간 무료)',
@@ -105,7 +102,15 @@ return [
     ],
 
     'contact' => [
-        'groomPhone' => '',
-        'bridePhone' => '',
+        'groom' => [
+            'father' => '',
+            'mother' => '01045210365',
+            'self' => '01090305236',
+        ],
+        'bride' => [
+            'father' => '01030567072',
+            'mother' => '01023054042',
+            'self' => '01021801202',
+        ],
     ],
 ];

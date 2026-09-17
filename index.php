@@ -48,6 +48,12 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
     <div class="siteMenu__panel" id="siteMenuPanel" data-menu-panel aria-hidden="true">
         <p class="siteMenu__title">메뉴</p>
         <div class="siteMenu__list">
+            <button type="button" class="siteMenu__item touchBtn" data-nav-target="invitation">
+                <span class="siteMenu__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
+                </span>
+                <span class="siteMenu__label">초대</span>
+            </button>
             <button type="button" class="siteMenu__item touchBtn" data-nav-target="weddingDate">
                 <span class="siteMenu__icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
@@ -59,12 +65,6 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5.5-5.5L7 19"/></svg>
                 </span>
                 <span class="siteMenu__label">갤러리</span>
-            </button>
-            <button type="button" class="siteMenu__item touchBtn" data-nav-target="letter">
-                <span class="siteMenu__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 8l9 6 9-6"/></svg>
-                </span>
-                <span class="siteMenu__label">초대</span>
             </button>
             <button type="button" class="siteMenu__item touchBtn" data-nav-target="location">
                 <span class="siteMenu__icon" aria-hidden="true">
@@ -84,20 +84,19 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
 <div class="filmApp" id="filmApp" data-wedding-at="<?= e($weddingAt) ?>">
     <?php
     require __DIR__ . '/includes/components/hero.php';
-    require __DIR__ . '/includes/components/invitation.php';
     require __DIR__ . '/includes/components/couple.php';
+    require __DIR__ . '/includes/components/invitation.php';
     require __DIR__ . '/includes/components/weddingInfo.php';
     require __DIR__ . '/includes/components/gallery.php';
-    require __DIR__ . '/includes/components/letter.php';
     require __DIR__ . '/includes/components/location.php';
     require __DIR__ . '/includes/components/guestbook.php';
     require __DIR__ . '/includes/components/account.php';
-    require __DIR__ . '/includes/components/contact.php';
     require __DIR__ . '/includes/components/share.php';
     require __DIR__ . '/includes/components/ending.php';
     ?>
 </div>
 <?php require __DIR__ . '/includes/components/outfit.php'; ?>
+<?php require __DIR__ . '/includes/components/rsvp.php'; ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <?php if (!empty($kakaoJavaScriptKey)): ?>
@@ -121,6 +120,7 @@ window.__weddingKakaoReady = new Promise(function (resolve) {
 <script src="<?= e(assetUrl('/assets/js/scenes.js')) ?>"></script>
 <script src="<?= e(assetUrl('/assets/js/playful.js')) ?>"></script>
 <script src="<?= e(assetUrl('/assets/js/guestbook.js')) ?>"></script>
+<script src="<?= e(assetUrl('/assets/js/rsvp.js')) ?>"></script>
 <script src="<?= e(assetUrl('/assets/js/map.js')) ?>"></script>
 </body>
 </html>

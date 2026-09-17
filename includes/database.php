@@ -128,3 +128,47 @@ function ensureGuestbookSchema(?PDO $pdo = null): void
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
 }
+
+function ensureRsvpSchema(?PDO $pdo = null): void
+{
+    $pdo ??= getPdo();
+
+    $needsRebuild = false;
+    try {
+        $cols = $pdo->query('SHOW COLUMNS FROM rsvp')->fetchAll(PDO::FETCH_ASSOC);
+        $fields = [];
+        foreach ($cols as $col) {
+            $fields[$col['Field'] ?? ''] = true;
+        }
+        if (isset($fields['attending']) || isset($fields['meal']) || isset($fields['bus'])) {
+            $needsRebuild = true;
+        }
+        if (!isset($fields['is_attend']) || !isset($fields['is_meal']) || !isset($fields['is_bus'])) {
+            $needsRebuild = true;
+        }
+    } catch (Throwable $e) {
+        $needsRebuild = false;
+    }
+
+    if ($needsRebuild) {
+        $pdo->exec('DROP TABLE IF EXISTS rsvp');
+    }
+
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS rsvp (
+            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            name VARCHAR(50) NOT NULL,
+            side ENUM('groom','bride') NOT NULL,
+            is_attend TINYINT(1) NOT NULL DEFAULT 0,
+            guests TINYINT UNSIGNED NOT NULL DEFAULT 0,
+            is_meal TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0=no, 1=yes, 2=maybe',
+            is_bus TINYINT(1) NOT NULL DEFAULT 0,
+            message VARCHAR(500) NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            ip_hash VARCHAR(64) NULL,
+            PRIMARY KEY (id),
+            KEY idx_rsvp_created_at (created_at),
+            KEY idx_rsvp_is_attend (is_attend)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    );
+}

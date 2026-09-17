@@ -36,30 +36,8 @@
     });
   }
 
-  function initEndingMerge() {
-    var ending = document.querySelector("[data-ending-merge]");
-    if (!ending) return;
-
-    function onScroll() {
-      var rect = ending.getBoundingClientRect();
-      var progress = 1 - Math.min(1, Math.max(0, rect.top / (window.innerHeight * 0.85)));
-      var g = ending.querySelector("[data-merge-groom]");
-      var b = ending.querySelector("[data-merge-bride]");
-      if (g && b) {
-        g.style.transform = "translateX(" + (1 - progress) * 36 + "px)";
-        b.style.transform = "translateX(" + -(1 - progress) * 36 + "px)";
-      }
-      if (progress > 0.82) {
-        ending.classList.add("isMerged");
-      }
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-  }
-
   function initLetterReveal() {
-    var section = document.querySelector("[data-scene='letter']");
+    var section = document.querySelector("[data-scene='invitation']");
     if (!section) return;
     var lines = Array.from(section.querySelectorAll("[data-letter-line]"));
     if (!lines.length) return;
@@ -92,7 +70,7 @@
         reveal();
         io.disconnect();
       },
-      { threshold: 0.35 }
+      { threshold: 0.18 }
     );
     io.observe(section);
   }
@@ -100,7 +78,6 @@
   document.addEventListener("DOMContentLoaded", function () {
     initPolaroidFlip();
     initFilmStrip();
-    initEndingMerge();
     initLetterReveal();
   });
 })();

@@ -32,7 +32,13 @@ $canRenderMap = $hasKakaoKey && $hasCoords;
 $phoneTel = $phone !== '' ? preg_replace('/\D+/', '', $phone) : '';
 
 if ($kakaoMapUrl === '') {
-    $kakaoMapUrl = 'https://map.kakao.com/?q=' . rawurlencode($venueName . ' ' . $address);
+    if ($hasCoords) {
+        $kakaoMapUrl = 'https://map.kakao.com/link/map/' . rawurlencode($venueName)
+            . ',' . rawurlencode((string) $lat)
+            . ',' . rawurlencode((string) $lng);
+    } else {
+        $kakaoMapUrl = 'https://map.kakao.com/?q=' . rawurlencode($venueName . ' ' . $address);
+    }
 }
 if ($naverMapUrl === '') {
     $naverMapUrl = 'https://map.naver.com/v5/search/' . rawurlencode($venueName . ' ' . $address);
@@ -47,7 +53,8 @@ if ($tmapUrl === '') {
     }
 }
 ?>
-<section class="scene scene--location scene--flow" data-scene="location" data-couple-state="heart" id="location">
+<section class="scene scene--location scene--full" data-scene="location" data-couple-state="heart" id="location">
+    <div class="locationInner">
     <p class="sceneLabel">오시는 길</p>
 
     <div class="location__head">
@@ -64,6 +71,19 @@ if ($tmapUrl === '') {
             >
                 <span data-copy-label>복사</span>
             </button>
+            <?php if ($phone !== ''): ?>
+                <a
+                    class="location__callBadge touchBtn"
+                    href="tel:<?= e($phoneTel) ?>"
+                    aria-label="<?= e($venueName) ?>에 전화하기 <?= e($phone) ?>"
+                    title="<?= e($phone) ?>"
+                >
+                    <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true" fill="currentColor">
+                        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.4 21 3 13.6 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.02l-2.2 2.19z"/>
+                    </svg>
+                    <span>전화</span>
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -82,85 +102,78 @@ if ($tmapUrl === '') {
             <p class="kakaoMap__fallbackAddress"><?= e($address) ?></p>
             <p class="kakaoMap__fallbackHint" data-kakao-map-hint>지도를 불러오지 못했습니다.</p>
         </div>
-    </div>
 
-    <div class="location__actions" role="group" aria-label="전화 및 지도 앱">
-        <?php if ($phone !== ''): ?>
+        <div class="mapNav" role="group" aria-label="지도 앱으로 길찾기">
             <a
-                class="location__action location__action--call touchBtn"
-                href="tel:<?= e($phoneTel) ?>"
-                aria-label="<?= e($venueName) ?>에 전화하기 <?= e($phone) ?>"
-                title="<?= e($phone) ?>"
+                class="mapNav__item touchBtn"
+                href="<?= e($naverMapUrl) ?>"
+                target="_blank"
+                rel="noopener noreferrer"
             >
-                <span class="location__actionIcon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
-                        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.4 21 3 13.6 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.02l-2.2 2.19z"/>
-                    </svg>
-                </span>
+                <img
+                    class="mapNav__icon"
+                    src="<?= e(assetUrl('/assets/images/map/navermap.png')) ?>"
+                    alt=""
+                    width="16"
+                    height="16"
+                    decoding="async"
+                >
+                <span class="mapNav__label">네이버 지도</span>
             </a>
-        <?php endif; ?>
-        <a
-            class="location__action location__action--kakao touchBtn"
-            href="<?= e($kakaoMapUrl) ?>"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="카카오맵에서 보기"
-            title="카카오맵"
-        >
-            <img
-                class="location__actionImg"
-                src="<?= e(assetUrl('/assets/images/map/kakaomap.png')) ?>"
-                alt=""
-                width="52"
-                height="52"
-                decoding="async"
+            <a
+                class="mapNav__item touchBtn"
+                href="<?= e($kakaoMapUrl) ?>"
+                target="_blank"
+                rel="noopener noreferrer"
             >
-        </a>
-        <a
-            class="location__action location__action--naver touchBtn"
-            href="<?= e($naverMapUrl) ?>"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="네이버지도에서 보기"
-            title="네이버지도"
-        >
-            <img
-                class="location__actionImg"
-                src="<?= e(assetUrl('/assets/images/map/navermap.png')) ?>"
-                alt=""
-                width="52"
-                height="52"
-                decoding="async"
+                <img
+                    class="mapNav__icon"
+                    src="<?= e(assetUrl('/assets/images/map/kakaomap.png')) ?>"
+                    alt=""
+                    width="16"
+                    height="16"
+                    decoding="async"
+                >
+                <span class="mapNav__label">카카오맵</span>
+            </a>
+            <a
+                class="mapNav__item touchBtn"
+                href="<?= e($tmapUrl) ?>"
             >
-        </a>
-        <a
-            class="location__action location__action--tmap touchBtn"
-            href="<?= e($tmapUrl) ?>"
-            aria-label="티맵에서 보기"
-            title="티맵"
-        >
-            <img
-                class="location__actionImg"
-                src="<?= e(assetUrl('/assets/images/map/tmap.png')) ?>"
-                alt=""
-                width="52"
-                height="52"
-                decoding="async"
-            >
-        </a>
+                <img
+                    class="mapNav__icon"
+                    src="<?= e(assetUrl('/assets/images/map/tmap.png')) ?>"
+                    alt=""
+                    width="16"
+                    height="16"
+                    decoding="async"
+                >
+                <span class="mapNav__label">티맵</span>
+            </a>
+        </div>
     </div>
 
     <div class="locationGuide">
         <?php if ($subway !== ''): ?>
             <article class="locationGuide__item">
-                <h3 class="locationGuide__label">지하철</h3>
+                <h3 class="locationGuide__label">
+                    <span class="locationGuide__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M9 21V9M15 21V9"/><circle cx="9" cy="6" r="0.8" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="0.8" fill="currentColor" stroke="none"/></svg>
+                    </span>
+                    지하철
+                </h3>
                 <p class="locationGuide__text"><?= e($subway) ?></p>
             </article>
         <?php endif; ?>
 
         <?php if (!empty($busLines)): ?>
             <article class="locationGuide__item">
-                <h3 class="locationGuide__label">버스</h3>
+                <h3 class="locationGuide__label">
+                    <span class="locationGuide__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M8 16v2M16 16v2M4 12h16M7 8h.01M17 8h.01"/><path d="M6 16h12"/></svg>
+                    </span>
+                    버스
+                </h3>
                 <ul class="locationGuide__list">
                     <?php foreach ($busLines as $line): ?>
                         <li><?= e($line) ?></li>
@@ -171,11 +184,17 @@ if ($tmapUrl === '') {
 
         <?php if ($parkingNote !== '' || $parking !== ''): ?>
             <article class="locationGuide__item">
-                <h3 class="locationGuide__label"><?= e($parking !== '' ? $parking : '주차') ?></h3>
+                <h3 class="locationGuide__label">
+                    <span class="locationGuide__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 17V7h4.2a3 3 0 010 6H9"/></svg>
+                    </span>
+                    <?= e($parking !== '' ? $parking : '주차') ?>
+                </h3>
                 <?php if ($parkingNote !== ''): ?>
                     <p class="locationGuide__text"><?= e($parkingNote) ?></p>
                 <?php endif; ?>
             </article>
         <?php endif; ?>
+    </div>
     </div>
 </section>

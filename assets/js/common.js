@@ -64,8 +64,8 @@
     document.body.removeChild(ta);
   }
 
-  function initAccountSheet() {
-    var sheet = qs("[data-account-sheet]");
+  function initBottomSheet(options) {
+    var sheet = qs(options.sheet);
     if (!sheet) return;
 
     // scene에 transform이 있으면 fixed가 깨지므로 body로 이동
@@ -76,7 +76,6 @@
     function openSheet() {
       sheet.hidden = false;
       sheet.setAttribute("aria-hidden", "false");
-      // 다음 프레임에 isOpen → 하단 슬라이드 인
       requestAnimationFrame(function () {
         sheet.classList.add("isOpen");
       });
@@ -94,11 +93,11 @@
       }, 320);
     }
 
-    qsa("[data-account-open]").forEach(function (btn) {
+    qsa(options.open).forEach(function (btn) {
       btn.addEventListener("click", openSheet);
     });
 
-    qsa("[data-account-close]").forEach(function (el) {
+    qsa(options.close, sheet).forEach(function (el) {
       el.addEventListener("click", closeSheet);
     });
 
@@ -108,23 +107,59 @@
       }
     });
 
-    qsa("[data-account-tab]").forEach(function (tab) {
-      tab.addEventListener("click", function () {
-        var key = tab.getAttribute("data-account-tab");
-        qsa("[data-account-tab]").forEach(function (t) {
-          t.classList.toggle("isActive", t === tab);
-          t.setAttribute("aria-selected", t === tab ? "true" : "false");
+    if (typeof options.onInit === "function") {
+      options.onInit(sheet);
+    }
+  }
+
+  function initAccountSheet() {
+    initBottomSheet({
+      sheet: "[data-account-sheet]",
+      open: "[data-account-open]",
+      close: "[data-account-close]",
+      onInit: function () {
+        qsa("[data-account-tab]").forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            var key = tab.getAttribute("data-account-tab");
+            qsa("[data-account-tab]").forEach(function (t) {
+              t.classList.toggle("isActive", t === tab);
+              t.setAttribute("aria-selected", t === tab ? "true" : "false");
+            });
+            qsa("[data-account-panel]").forEach(function (panel) {
+              panel.hidden = panel.getAttribute("data-account-panel") !== key;
+            });
+          });
         });
-        qsa("[data-account-panel]").forEach(function (panel) {
-          panel.hidden = panel.getAttribute("data-account-panel") !== key;
+      },
+    });
+  }
+
+  function initContactSheet() {
+    initBottomSheet({
+      sheet: "[data-contact-sheet]",
+      open: "[data-contact-open]",
+      close: "[data-contact-close]",
+      onInit: function (sheet) {
+        qsa("[data-contact-tab]", sheet).forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            var key = tab.getAttribute("data-contact-tab");
+            qsa("[data-contact-tab]", sheet).forEach(function (t) {
+              t.classList.toggle("isActive", t === tab);
+              t.setAttribute("aria-selected", t === tab ? "true" : "false");
+            });
+            qsa("[data-contact-panel]", sheet).forEach(function (panel) {
+              panel.hidden = panel.getAttribute("data-contact-panel") !== key;
+            });
+          });
         });
-      });
+      },
     });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
     initCopyButtons();
     initAccountSheet();
+    initContactSheet();
   });
 
   window.weddingCommon = {

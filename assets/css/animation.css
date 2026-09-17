@@ -21,7 +21,13 @@
 
   .couplePanel,
   .letterScene__line,
-  .letterScene__closeLine {
+  .letterScene__closeLine,
+  .inviteScene__quote,
+  .inviteScene__title,
+  .inviteScene__line,
+  .inviteScene__closeLine,
+  .inviteScene__parents,
+  .inviteScene__contactBtn {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;

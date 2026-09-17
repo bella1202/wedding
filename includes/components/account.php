@@ -5,7 +5,18 @@ $hasGroom = !empty($accounts['groom']);
 $hasBride = !empty($accounts['bride']);
 ?>
 <section class="scene scene--account scene--flow" data-scene="account" data-couple-state="heart" id="account">
-    <button type="button" class="accountSheet__open touchBtn" data-account-open>마음 전하실 곳</button>
+    <div class="accountIntro">
+        <button type="button" class="accountSheet__open touchBtn" data-account-open>마음 전하실 곳</button>
+        <img
+            class="accountIntro__flower"
+            src="<?= e(assetUrl('/assets/images/account-flower.png')) ?>"
+            alt=""
+            width="35"
+            height="35"
+            decoding="async"
+        >
+        <p class="accountSheet__note">참석이 어려우신 분들은<br>축하의 마음을 전달해주세요.</p>
+    </div>
     <div class="accountSheet" data-account-sheet hidden aria-hidden="true">
         <div class="accountSheet__backdrop" data-account-close></div>
         <div class="accountSheet__panel">
@@ -21,9 +32,8 @@ $hasBride = !empty($accounts['bride']);
                 <?php else: ?>
                     <?php foreach ($accounts['groom'] as $acc): ?>
                         <button type="button" class="accountRow touchBtn" data-copy-target="<?= e($acc['number'] ?? '') ?>">
-                            <span><?= e($acc['bank'] ?? '') ?></span>
-                            <span><?= e($acc['number'] ?? '') ?></span>
-                            <span><?= e($acc['holder'] ?? '') ?></span>
+                            <strong><?= e($acc['holder'] ?? '') ?></strong>
+                            <span><?= e(($acc['bank'] ?? '') . ' ' . ($acc['number'] ?? '')) ?></span>
                             <span class="accountRow__hint" data-copy-label>터치하여 복사</span>
                         </button>
                     <?php endforeach; ?>
@@ -35,9 +45,8 @@ $hasBride = !empty($accounts['bride']);
                 <?php else: ?>
                     <?php foreach ($accounts['bride'] as $acc): ?>
                         <button type="button" class="accountRow touchBtn" data-copy-target="<?= e($acc['number'] ?? '') ?>">
-                            <span><?= e($acc['bank'] ?? '') ?></span>
-                            <span><?= e($acc['number'] ?? '') ?></span>
-                            <span><?= e($acc['holder'] ?? '') ?></span>
+                            <strong><?= e($acc['holder'] ?? '') ?></strong>
+                            <span><?= e(($acc['bank'] ?? '') . ' ' . ($acc['number'] ?? '')) ?></span>
                             <span class="accountRow__hint" data-copy-label>터치하여 복사</span>
                         </button>
                     <?php endforeach; ?>

@@ -103,6 +103,9 @@
           if (panel) panel.setAttribute("aria-hidden", "true");
         }
       }
+      if (visible) {
+        document.dispatchEvent(new CustomEvent("wedding:post-hero"));
+      }
     }
 
     function pickActive() {
@@ -230,9 +233,9 @@
     });
 
     var sectionIds = [
+      "invitation",
       "weddingDate",
       "gallery",
-      "letter",
       "location",
       "guestbook",
     ];
@@ -273,11 +276,10 @@
         }
 
         var bestId = best.id || best.getAttribute("data-scene");
-        // 계좌/연락/공유는 방명록 구간에 이어지므로 같은 메뉴 활성화
+        // 계좌/공유는 방명록 구간에 이어지므로 같은 메뉴 활성화
         if (
           bestId === "account" ||
           best.getAttribute("data-scene") === "account" ||
-          best.getAttribute("data-scene") === "contact" ||
           best.getAttribute("data-scene") === "share"
         ) {
           setActive("guestbook");
@@ -295,8 +297,8 @@
       }
     );
 
-    // 계좌·연락·공유도 관찰해서 마음 전하기 메뉴 활성화 유지
-    ["account", "contact", "share"].forEach(function (id) {
+    // 계좌·공유도 관찰해서 마음 전하기 메뉴 활성화 유지
+    ["account", "share"].forEach(function (id) {
       var el =
         document.getElementById(id) ||
         document.querySelector('[data-scene="' + id + '"]');

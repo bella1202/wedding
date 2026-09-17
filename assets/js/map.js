@@ -68,25 +68,6 @@
     });
   }
 
-  function createMapPinImage() {
-    var svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="52" viewBox="0 0 40 52">' +
-      '<defs>' +
-      '<filter id="pinShadow" x="-30%" y="-10%" width="160%" height="140%">' +
-      '<feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="#1a1410" flood-opacity="0.35"/>' +
-      "</filter>" +
-      "</defs>" +
-      '<path filter="url(#pinShadow)" fill="#E52528" ' +
-      'd="M20 2.5C11.2 2.5 4.2 9.4 4.2 18.1c0 11.2 15.8 30.4 15.8 30.4S35.8 29.3 35.8 18.1C35.8 9.4 28.8 2.5 20 2.5z"/>' +
-      '<circle cx="20" cy="18" r="6.5" fill="#FFFFFF"/>' +
-      '<circle cx="20" cy="18" r="3.2" fill="#B71C1C"/>' +
-      "</svg>";
-    var url = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-    return new kakao.maps.MarkerImage(url, new kakao.maps.Size(40, 52), {
-      offset: new kakao.maps.Point(20, 52),
-    });
-  }
-
   function renderMap(root) {
     var lat = parseFloat(root.getAttribute("data-lat") || "");
     var lng = parseFloat(root.getAttribute("data-lng") || "");
@@ -114,13 +95,12 @@
         var center = new kakao.maps.LatLng(lat, lng);
         var map = new kakao.maps.Map(canvas, {
           center: center,
-          level: 4, // 한 단계 축소 (숫자가 클수록 멀리 보임)
+          level: 5, // 한 단계 축소 (숫자가 클수록 멀리 보임)
         });
 
         new kakao.maps.Marker({
           position: center,
           map: map,
-          image: createMapPinImage(),
           zIndex: 4,
         });
 

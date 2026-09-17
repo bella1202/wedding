@@ -1,8 +1,9 @@
 (function () {
   "use strict";
 
-  var PAGE_SIZE = 5;
-  var offset = 0;
+  var MODAL_PAGE_SIZE = 10;
+  var modalOffset = 0;
+  var modalLoading = false;
   var deletingId = null;
   var submitting = false;
 
@@ -19,6 +20,10 @@
     return (root || document).querySelector(sel);
   }
 
+  function qsa(sel, root) {
+    return Array.from((root || document).querySelectorAll(sel));
+  }
+
   function formatDate(iso) {
     if (!iso) return "";
     var d = new Date(String(iso).replace(" ", "T"));
@@ -26,7 +31,9 @@
     var y = d.getFullYear();
     var m = String(d.getMonth() + 1).padStart(2, "0");
     var day = String(d.getDate()).padStart(2, "0");
-    return y + "." + m + "." + day;
+    var h = String(d.getHours()).padStart(2, "0");
+    var min = String(d.getMinutes()).padStart(2, "0");
+    return y + "." + m + "." + day + " " + h + ":" + min;
   }
 
   function lockScroll(on) {
@@ -81,6 +88,34 @@
       if (!sheet.classList.contains("isOpen")) {
         sheet.hidden = true;
         sheet.setAttribute("aria-hidden", "true");
+      }
+    }, 320);
+  }
+
+  function openAllModal() {
+    var modal = qs("[data-guestbook-all]");
+    if (!modal) return;
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+    modal.hidden = false;
+    modal.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(function () {
+      modal.classList.add("isOpen");
+    });
+    lockScroll(true);
+    loadModalMessages(true);
+  }
+
+  function closeAllModal() {
+    var modal = qs("[data-guestbook-all]");
+    if (!modal) return;
+    modal.classList.remove("isOpen");
+    lockScroll(false);
+    window.setTimeout(function () {
+      if (!modal.classList.contains("isOpen")) {
+        modal.hidden = true;
+        modal.setAttribute("aria-hidden", "true");
       }
     }, 320);
   }
@@ -150,77 +185,103 @@
     }, 980);
   }
 
-  function renderItem(item, prepend) {
-    var list = qs("[data-guestbook-list]");
-    var empty = qs("[data-guestbook-empty]");
-    if (!list) return;
-
-    if (empty) empty.hidden = true;
-
+  function buildNote(item) {
     var article = document.createElement("article");
     article.className = "guestbookNote";
     article.setAttribute("data-guestbook-id", String(item.id));
     article.innerHTML =
-      '<div class="guestbookNote__pin" aria-hidden="true"></div>' +
       '<div class="guestbookNote__top">' +
+      '<div class="guestbookNote__meta">' +
       '<p class="guestbookNote__name"></p>' +
-      '<button type="button" class="guestbookNote__menu touchBtn" data-guestbook-menu aria-label="메뉴">•••</button>' +
-      "</div>" +
-      '<p class="guestbookNote__message"></p>' +
       '<p class="guestbookNote__date"></p>' +
+      "</div>" +
+      '<div class="guestbookNote__menuWrap">' +
+      '<button type="button" class="guestbookNote__menu touchBtn" data-guestbook-menu aria-label="메뉴" aria-expanded="false">•••</button>' +
       '<div class="guestbookNote__actions" data-guestbook-actions hidden>' +
-      '<button type="button" class="touchBtn" data-guestbook-delete>삭제</button>' +
-      "</div>";
+      '<button type="button" class="guestbookNote__actionBtn touchBtn" data-guestbook-delete>삭제</button>' +
+      "</div>" +
+      "</div>" +
+      "</div>" +
+      '<p class="guestbookNote__message"></p>';
 
     article.querySelector(".guestbookNote__name").textContent = item.name;
     article.querySelector(".guestbookNote__message").textContent = item.message;
     article.querySelector(".guestbookNote__date").textContent = formatDate(item.created_at);
+    return article;
+  }
 
+  function syncModalEmpty() {
+    var list = qs("[data-guestbook-all-list]");
+    var empty = qs("[data-guestbook-all-empty]");
+    if (!list || !empty) return;
+    var hasNotes = !!list.querySelector(".guestbookNote");
+    empty.hidden = hasNotes;
+  }
+
+  function renderModalItem(item, prepend) {
+    var list = qs("[data-guestbook-all-list]");
+    if (!list) return;
+    var empty = qs("[data-guestbook-all-empty]");
+    if (empty) empty.hidden = true;
+
+    var article = buildNote(item);
     if (prepend) {
-      list.prepend(article);
+      if (empty && empty.parentElement === list) {
+        list.insertBefore(article, empty.nextSibling);
+      } else {
+        list.prepend(article);
+      }
       article.classList.add("isArrive");
     } else {
       list.appendChild(article);
     }
-
     requestAnimationFrame(function () {
       article.classList.add("isVisible");
     });
   }
 
-  function loadMessages(reset) {
+  function loadModalMessages(reset) {
+    if (modalLoading) return Promise.resolve();
+    var list = qs("[data-guestbook-all-list]");
+    var more = qs("[data-guestbook-all-more]");
+    var empty = qs("[data-guestbook-all-empty]");
+    if (!list) return Promise.resolve();
+
     if (reset) {
-      offset = 0;
-      var list = qs("[data-guestbook-list]");
-      if (list) {
-        list.querySelectorAll(".guestbookNote").forEach(function (n) {
-          n.remove();
-        });
-      }
+      modalOffset = 0;
+      qsa(".guestbookNote", list).forEach(function (n) {
+        n.remove();
+      });
+      if (empty) empty.hidden = true;
     }
 
-    return fetch(apiBase() + "list.php?limit=" + PAGE_SIZE + "&offset=" + offset)
+    modalLoading = true;
+    return fetch(
+      apiBase() + "list.php?limit=" + MODAL_PAGE_SIZE + "&offset=" + modalOffset
+    )
       .then(function (r) {
         return r.json();
       })
       .then(function (data) {
         if (!data.success) throw new Error(data.error || "load failed");
-        var empty = qs("[data-guestbook-empty]");
-        var more = qs("[data-guestbook-more]");
 
-        if (!data.items.length && offset === 0) {
+        if (!data.items.length && modalOffset === 0) {
           if (empty) empty.hidden = false;
         } else {
           data.items.forEach(function (item) {
-            renderItem(item, false);
+            renderModalItem(item, false);
           });
         }
 
-        offset += data.items.length;
+        modalOffset += data.items.length;
         if (more) more.hidden = !data.hasMore;
+        syncModalEmpty();
       })
       .catch(function () {
-        setError(qs("[data-guestbook-error]"), "방명록을 불러오지 못했습니다.");
+        if (empty && modalOffset === 0) empty.hidden = false;
+      })
+      .finally(function () {
+        modalLoading = false;
       });
   }
 
@@ -238,12 +299,31 @@
     sheet.querySelectorAll("[data-guestbook-sheet-close]").forEach(function (el) {
       el.addEventListener("click", closeWriteSheet);
     });
+  }
 
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && sheet.classList.contains("isOpen")) {
-        closeWriteSheet();
-      }
+  function initAllModal() {
+    var modal = qs("[data-guestbook-all]");
+    if (!modal) return;
+
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
+    var openBtn = qs("[data-guestbook-more]");
+    if (openBtn) {
+      openBtn.addEventListener("click", openAllModal);
+    }
+
+    qsa("[data-guestbook-all-close]", modal).forEach(function (el) {
+      el.addEventListener("click", closeAllModal);
     });
+
+    var allMore = qs("[data-guestbook-all-more]", modal);
+    if (allMore) {
+      allMore.addEventListener("click", function () {
+        loadModalMessages(false);
+      });
+    }
   }
 
   function initForm() {
@@ -302,7 +382,12 @@
           closeWriteSheet();
 
           playDeliverAnimation(function () {
-            renderItem(res.data.item, true);
+            var allModal = qs("[data-guestbook-all]");
+            if (allModal && allModal.classList.contains("isOpen")) {
+              renderModalItem(res.data.item, true);
+              modalOffset += 1;
+              syncModalEmpty();
+            }
             showToast();
           });
         })
@@ -316,26 +401,53 @@
     });
   }
 
+  function removeNoteEverywhere(id) {
+    qsa('[data-guestbook-id="' + id + '"]').forEach(function (node) {
+      node.classList.add("isLeave");
+      window.setTimeout(function () {
+        node.remove();
+        syncModalEmpty();
+      }, 280);
+    });
+  }
+
   function initListActions() {
-    var list = qs("[data-guestbook-list]");
+    var allList = qs("[data-guestbook-all-list]");
     var modal = qs("[data-guestbook-delete-modal]");
-    if (!list || !modal) return;
+    if (!modal) return;
 
     if (modal.parentElement !== document.body) {
       document.body.appendChild(modal);
     }
 
-    list.addEventListener("click", function (e) {
+    function closeAllMenus(except) {
+      qsa("[data-guestbook-actions]").forEach(function (actions) {
+        if (except && actions === except) return;
+        actions.hidden = true;
+        var wrap = actions.closest(".guestbookNote__menuWrap");
+        var btn = wrap && wrap.querySelector("[data-guestbook-menu]");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function onListClick(e) {
       var menu = e.target.closest("[data-guestbook-menu]");
       if (menu) {
+        e.stopPropagation();
         var note = menu.closest(".guestbookNote");
         var actions = note && note.querySelector("[data-guestbook-actions]");
-        if (actions) actions.hidden = !actions.hidden;
+        if (!actions) return;
+        var willOpen = actions.hidden;
+        closeAllMenus(willOpen ? actions : null);
+        actions.hidden = !willOpen;
+        menu.setAttribute("aria-expanded", willOpen ? "true" : "false");
         return;
       }
 
       var del = e.target.closest("[data-guestbook-delete]");
       if (del) {
+        e.stopPropagation();
+        closeAllMenus();
         var note2 = del.closest(".guestbookNote");
         deletingId = note2 ? parseInt(note2.getAttribute("data-guestbook-id"), 10) : null;
         modal.hidden = false;
@@ -348,11 +460,23 @@
         var pw = qs("[data-guestbook-delete-password]");
         if (pw) pw.value = "";
       }
+    }
+
+    if (allList) {
+      allList.addEventListener("click", onListClick);
+    }
+
+    document.addEventListener("click", function (e) {
+      if (e.target.closest(".guestbookNote__menuWrap")) return;
+      closeAllMenus();
     });
 
     function closeDeleteModal() {
       modal.classList.remove("isOpen");
-      lockScroll(false);
+      var allOpen = qs("[data-guestbook-all]");
+      if (!(allOpen && allOpen.classList.contains("isOpen"))) {
+        lockScroll(false);
+      }
       window.setTimeout(function () {
         if (!modal.classList.contains("isOpen")) {
           modal.hidden = true;
@@ -393,17 +517,9 @@
               setError(err, (res.data && res.data.error) || "삭제에 실패했습니다.");
               return;
             }
-            var node = list.querySelector('[data-guestbook-id="' + deletingId + '"]');
-            if (node) {
-              node.classList.add("isLeave");
-              window.setTimeout(function () {
-                node.remove();
-                if (!list.querySelector(".guestbookNote")) {
-                  var empty = qs("[data-guestbook-empty]");
-                  if (empty) empty.hidden = false;
-                }
-              }, 280);
-            }
+            var id = deletingId;
+            removeNoteEverywhere(id);
+            if (modalOffset > 0) modalOffset = Math.max(0, modalOffset - 1);
             closeDeleteModal();
           })
           .catch(function () {
@@ -416,15 +532,23 @@
   document.addEventListener("DOMContentLoaded", function () {
     if (!qs("[data-guestbook-write]") && !qs("[data-guestbook-form]")) return;
     initWriteSheet();
+    initAllModal();
     initForm();
     initListActions();
-    loadMessages(true);
 
-    var more = qs("[data-guestbook-more]");
-    if (more) {
-      more.addEventListener("click", function () {
-        loadMessages(false);
-      });
-    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      var deleteModal = qs("[data-guestbook-delete-modal]");
+      if (deleteModal && deleteModal.classList.contains("isOpen")) return;
+      var allModal = qs("[data-guestbook-all]");
+      if (allModal && allModal.classList.contains("isOpen")) {
+        closeAllModal();
+        return;
+      }
+      var sheet = qs("[data-guestbook-sheet]");
+      if (sheet && sheet.classList.contains("isOpen")) {
+        closeWriteSheet();
+      }
+    });
   });
 })();

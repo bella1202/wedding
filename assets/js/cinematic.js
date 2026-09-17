@@ -84,6 +84,15 @@
     intro._introTimer = timer;
   }
 
+  function pad2(n) {
+    return String(Math.max(0, n)).padStart(2, "0");
+  }
+
+  function setCountdownText(el, next) {
+    if (!el || el.textContent === next) return;
+    el.textContent = next;
+  }
+
   function updateDDay() {
     var wrap = document.querySelector("[data-wedding-countdown]");
     var app = document.getElementById("filmApp");
@@ -95,66 +104,41 @@
     var target = new Date(at);
     var now = new Date();
     var ms = target - now;
-    var digitsWrap = wrap.querySelector("[data-flip-digits]");
-    var digitEls = wrap.querySelectorAll("[data-flip-digit] .flipDigit__face");
-    var statusEl = wrap.querySelector("[data-flip-status]");
-    var row = wrap.querySelector(".flipClock__row");
-
-    function setDigits(str) {
-      var chars = String(str).padStart(3, "0").slice(-3).split("");
-      digitEls.forEach(function (el, i) {
-        var next = chars[i] || "0";
-        if (el.textContent === next) return;
-        var digit = el.closest(".flipDigit");
-        if (digit) digit.classList.remove("isFlip");
-        // force reflow for flip animation
-        void digit.offsetWidth;
-        el.textContent = next;
-        if (digit) digit.classList.add("isFlip");
-      });
-    }
+    var units = wrap.querySelector("[data-countdown-units]");
+    var caption = wrap.querySelector("[data-countdown-caption]");
+    var statusEl = wrap.querySelector("[data-countdown-status]");
+    var daysEl = wrap.querySelector('[data-countdown="days"]');
+    var hoursEl = wrap.querySelector('[data-countdown="hours"]');
+    var minsEl = wrap.querySelector('[data-countdown="mins"]');
+    var secsEl = wrap.querySelector('[data-countdown="secs"]');
+    var daysTextEl = wrap.querySelector("[data-countdown-days-text]");
 
     if (ms <= 0) {
-      if (row) row.hidden = true;
+      if (units) units.hidden = true;
+      if (caption) caption.hidden = true;
       if (statusEl) {
         statusEl.hidden = false;
-        statusEl.textContent = ms < -86400000 ? "WE GOT MARRIED" : "TODAY";
+        statusEl.textContent = ms < -86400000 ? "결혼식을 올렸습니다" : "오늘은 결혼식 날입니다";
       }
       return;
     }
 
-    if (row) row.hidden = false;
+    if (units) units.hidden = false;
+    if (caption) caption.hidden = false;
     if (statusEl) statusEl.hidden = true;
 
-    var days = Math.ceil(ms / 86400000);
-    if (digitsWrap && digitEls.length) {
-      // grow digit count if needed (4+ digits rare but possible)
-      var dayStr = String(days);
-      if (dayStr.length > digitEls.length) {
-        var needed = dayStr.length - digitEls.length;
-        for (var i = 0; i < needed; i++) {
-          var span = document.createElement("span");
-          span.className = "flipDigit";
-          span.setAttribute("data-flip-digit", "");
-          span.innerHTML = '<span class="flipDigit__face">0</span>';
-          digitsWrap.insertBefore(span, digitsWrap.firstChild);
-        }
-        digitEls = wrap.querySelectorAll("[data-flip-digit] .flipDigit__face");
-      }
-      var padded = dayStr.padStart(Math.max(3, dayStr.length), "0");
-      digitEls.forEach(function (el, i) {
-        var offset = digitEls.length - padded.length;
-        var next = i < offset ? "0" : padded[i - offset];
-        if (el.textContent === next) return;
-        var digit = el.closest(".flipDigit");
-        if (digit) {
-          digit.classList.remove("isFlip");
-          void digit.offsetWidth;
-          digit.classList.add("isFlip");
-        }
-        el.textContent = next;
-      });
-    }
+    var totalSec = Math.floor(ms / 1000);
+    var days = Math.floor(totalSec / 86400);
+    var hours = Math.floor((totalSec % 86400) / 3600);
+    var mins = Math.floor((totalSec % 3600) / 60);
+    var secs = totalSec % 60;
+    var remainDays = Math.max(1, Math.ceil(ms / 86400000));
+
+    setCountdownText(daysEl, pad2(days));
+    setCountdownText(hoursEl, pad2(hours));
+    setCountdownText(minsEl, pad2(mins));
+    setCountdownText(secsEl, pad2(secs));
+    setCountdownText(daysTextEl, String(remainDays));
   }
 
   function initScrollCinematic() {
@@ -229,7 +213,7 @@
     }
 
     updateDDay();
-    setInterval(updateDDay, 60000);
+    setInterval(updateDDay, 1000);
     initScrollCinematic();
   });
 })();

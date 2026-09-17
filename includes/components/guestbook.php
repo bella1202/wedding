@@ -1,39 +1,57 @@
 <?php
 /** @var array $weddingData */
-$g = $weddingData['groom'];
-$b = $weddingData['bride'];
 ?>
 <section class="scene scene--guestbook scene--flow" data-scene="guestbook" id="guestbook" data-couple-state="heart">
     <p class="sceneLabel">방명록</p>
-    <p class="guestbook__for"><?= e($g['name']) ?> &amp; <?= e($b['name']) ?></p>
     <p class="guestbook__lead">따뜻한 한마디를 남겨주세요</p>
 
-    <button type="button" class="guestbookWrite touchBtn" data-guestbook-write>
-        <span class="guestbookWrite__icon" aria-hidden="true">✎</span>
-        축하 메시지 남기기
+    <button type="button" class="guestbookBox touchBtn" data-guestbook-more aria-label="메시지 박스 열기">
+        <span class="guestbookBox__notes" aria-hidden="true">
+            <span class="guestbookBox__note guestbookBox__note--a"><i>♥</i></span>
+            <span class="guestbookBox__note guestbookBox__note--b"><i>♥</i></span>
+            <span class="guestbookBox__note guestbookBox__note--c"><i>♥</i></span>
+        </span>
+        <span class="guestbookBox__unit">
+            <span class="guestbookBox__lid"></span>
+            <span class="guestbookBox__body">
+                <span>MESSAGE BOX</span>
+            </span>
+        </span>
     </button>
 
-    <div class="guestbookBox" aria-hidden="true">
-        <div class="guestbookBox__lid"></div>
-        <div class="guestbookBox__body">
-            <span>MESSAGE BOX</span>
-        </div>
-    </div>
-
-    <div class="guestbookList" data-guestbook-list>
-        <p class="guestbookList__empty" data-guestbook-empty>
-            아직 도착한 메시지가 없어요.<br>
-            첫 번째 쪽지를 남겨주세요.
-        </p>
-    </div>
-    <button type="button" class="guestbookMore touchBtn" data-guestbook-more hidden>더 보기</button>
+    <button type="button" class="guestbookWrite touchBtn" data-guestbook-write>
+        작성하기
+    </button>
 </section>
+
+<div
+    class="guestbookAll"
+    data-guestbook-all
+    hidden
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="guestbookAllTitle"
+>
+    <div class="guestbookAll__backdrop" data-guestbook-all-close></div>
+    <div class="guestbookAll__panel">
+        <button type="button" class="guestbookAll__close touchBtn" data-guestbook-all-close aria-label="닫기">&times;</button>
+        <p class="guestbookAll__title" id="guestbookAllTitle">방명록</p>
+        <div class="guestbookAll__list" data-guestbook-all-list>
+            <p class="guestbookAll__empty" data-guestbook-all-empty hidden>
+                아직 도착한 메시지가 없어요.<br>
+                첫 번째 쪽지를 남겨주세요.
+            </p>
+        </div>
+        <button type="button" class="guestbookAll__more touchBtn" data-guestbook-all-more hidden>더 불러오기</button>
+    </div>
+</div>
 
 <div class="guestbookSheet" data-guestbook-sheet hidden aria-hidden="true">
     <div class="guestbookSheet__backdrop" data-guestbook-sheet-close></div>
-    <div class="guestbookSheet__panel" role="dialog" aria-label="축하 메시지 작성">
+    <div class="guestbookSheet__panel" role="dialog" aria-label="방명록 작성">
         <button type="button" class="guestbookSheet__close touchBtn" data-guestbook-sheet-close aria-label="닫기">&times;</button>
-        <p class="guestbookSheet__title">쪽지 남기기</p>
+        <p class="guestbookSheet__title">방명록 작성</p>
         <p class="guestbookSheet__hint">작성 후 두 사람에게 배달돼요</p>
 
         <form class="guestbookForm" data-guestbook-form novalidate>
