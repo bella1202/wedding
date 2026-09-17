@@ -15,7 +15,7 @@ $hasBride = !empty($accounts['bride']);
             height="35"
             decoding="async"
         >
-        <p class="accountSheet__note">참석이 어려우신 분들은<br>축하의 마음을 전달해주세요.</p>
+        <p class="accountSheet__note">참석이 어려우신 분들을 위해<br>마음을 전하실 수 있는 공간을 마련했습니다.<br><br>보내주시는 소중한 축하에<br>진심으로 감사드립니다.</p>
     </div>
     <div class="accountSheet" data-account-sheet hidden aria-hidden="true">
         <div class="accountSheet__backdrop" data-account-close></div>

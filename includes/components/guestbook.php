@@ -60,19 +60,27 @@
                 <input type="text" name="name" maxlength="20" autocomplete="name" required placeholder="홍길동">
             </label>
             <label class="guestbookForm__field">
-                <span>메시지</span>
+                <span>축하 메시지</span>
                 <textarea name="message" maxlength="300" rows="4" required placeholder="두 분 행복하세요!"></textarea>
             </label>
             <label class="guestbookForm__field">
-                <span>비밀번호 (삭제용 · 4자 이상)</span>
+                <span>비밀번호 (삭제용•4자 이상)</span>
                 <input type="password" name="password" minlength="4" autocomplete="new-password" required placeholder="****">
             </label>
             <input type="text" name="website" class="guestbookForm__honey" tabindex="-1" autocomplete="off" aria-hidden="true">
             <p class="guestbookForm__error" data-guestbook-error hidden></p>
             <button type="submit" class="guestbookForm__submit touchBtn" data-guestbook-submit>배달하기</button>
         </form>
+
+        <div class="guestbookSheet__legal">
+            <button type="button" class="guestbookSheet__legalLink touchBtn" data-guestbook-legal-open="privacy">개인정보처리방침</button>
+            <span class="guestbookSheet__legalSep" aria-hidden="true">·</span>
+            <button type="button" class="guestbookSheet__legalLink touchBtn" data-guestbook-legal-open="terms">이용약관</button>
+        </div>
     </div>
 </div>
+
+<?php require __DIR__ . '/guestbook-legal.php'; ?>
 
 <div class="guestbookDeleteModal" data-guestbook-delete-modal hidden aria-hidden="true">
     <div class="guestbookDeleteModal__backdrop" data-guestbook-delete-close></div>

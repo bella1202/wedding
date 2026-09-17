@@ -285,6 +285,28 @@
       });
   }
 
+  function openLegalModal(kind) {
+    var modal = qs('[data-guestbook-legal="' + kind + '"]');
+    if (!modal) return;
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+    modal.hidden = false;
+    modal.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(function () {
+      modal.classList.add("isOpen");
+    });
+  }
+
+  function closeLegalModal(modal) {
+    if (!modal) return;
+    modal.classList.remove("isOpen");
+    window.setTimeout(function () {
+      modal.hidden = true;
+      modal.setAttribute("aria-hidden", "true");
+    }, 320);
+  }
+
   function initWriteSheet() {
     var sheet = qs("[data-guestbook-sheet]");
     if (!sheet) return;
@@ -298,6 +320,23 @@
 
     sheet.querySelectorAll("[data-guestbook-sheet-close]").forEach(function (el) {
       el.addEventListener("click", closeWriteSheet);
+    });
+
+    qsa("[data-guestbook-legal-open]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openLegalModal(btn.getAttribute("data-guestbook-legal-open") || "privacy");
+      });
+    });
+
+    qsa("[data-guestbook-legal]").forEach(function (modal) {
+      if (modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+      qsa("[data-guestbook-legal-close]", modal).forEach(function (el) {
+        el.addEventListener("click", function () {
+          closeLegalModal(modal);
+        });
+      });
     });
   }
 
@@ -538,6 +577,11 @@
 
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
+      var openLegal = qs("[data-guestbook-legal].isOpen");
+      if (openLegal) {
+        closeLegalModal(openLegal);
+        return;
+      }
       var deleteModal = qs("[data-guestbook-delete-modal]");
       if (deleteModal && deleteModal.classList.contains("isOpen")) return;
       var allModal = qs("[data-guestbook-all]");

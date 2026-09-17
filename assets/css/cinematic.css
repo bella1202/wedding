@@ -2797,6 +2797,140 @@ body.isScrollLocked .floatingCouple {
   opacity: 0.5;
 }
 
+.guestbookSheet__legal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 4px;
+}
+
+.guestbookSheet__legalLink {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: -0.01em;
+  color: rgba(34, 34, 34, 0.42);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.guestbookSheet__legalSep {
+  font-size: 11px;
+  color: rgba(34, 34, 34, 0.28);
+}
+
+.guestbookLegal {
+  position: fixed;
+  inset: 0;
+  z-index: 10055;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.guestbookLegal.isOpen {
+  pointer-events: auto;
+}
+
+.guestbookLegal[hidden] {
+  display: none !important;
+}
+
+.guestbookLegal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(34, 34, 34, 0.45);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.guestbookLegal.isOpen .guestbookLegal__backdrop {
+  opacity: 1;
+}
+
+.guestbookLegal__panel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: min(78dvh, 640px);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-radius: 20px 20px 0 0;
+  border-top: 1px solid var(--line);
+  padding: 18px 20px max(24px, env(safe-area-inset-bottom));
+  color: var(--cream);
+  transform: translateY(110%);
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 -12px 40px rgba(34, 34, 34, 0.14);
+}
+
+.guestbookLegal.isOpen .guestbookLegal__panel {
+  transform: translateY(0);
+}
+
+.guestbookLegal__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  color: rgba(34, 34, 34, 0.45);
+}
+
+.guestbookLegal__title {
+  margin: 4px 28px 14px 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.guestbookLegal__body {
+  flex: 1 1 auto;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+  color: rgba(34, 34, 34, 0.72);
+  text-align: left;
+}
+
+.guestbookLegal__body p {
+  margin: 0 0 14px;
+}
+
+.guestbookLegal__body strong {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: rgba(34, 34, 34, 0.88);
+  font-weight: 600;
+}
+
+.guestbookLegal__done {
+  flex: 0 0 auto;
+  width: 100%;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 999px;
+  padding: 13px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  background: var(--accent);
+  color: #fff;
+}
+
 /* flying note */
 .guestbookFlyer {
   position: fixed;
@@ -3523,6 +3657,8 @@ body.isScrollLocked .floatingCouple {
   .guestbookSheet__panel,
   .guestbookAll__panel,
   .guestbookDeleteModal__panel,
+  .guestbookLegal__panel,
+  .guestbookLegal__backdrop,
   .rsvpModal__panel,
   .rsvpModal__backdrop {
     transition: none !important;
