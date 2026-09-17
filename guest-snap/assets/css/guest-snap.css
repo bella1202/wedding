@@ -137,7 +137,8 @@ body {
   right: 4%;
   width: 12px;
   height: 12px;
-  background: #f0c4b0;
+  background: #f6d35a;
+  filter: drop-shadow(0 0 6px rgba(246, 211, 90, 0.85));
   animation-delay: 0.35s;
 }
 
@@ -163,8 +164,29 @@ body {
   right: -2%;
   width: 8px;
   height: 8px;
-  background: #f7d6a8;
+  background: #ffe08a;
+  filter: drop-shadow(0 0 6px rgba(255, 224, 138, 0.9));
   animation-delay: 1.4s;
+}
+
+.guestSnapSpark--f {
+  top: 8%;
+  right: 22%;
+  width: 11px;
+  height: 11px;
+  background: #ffd24d;
+  filter: drop-shadow(0 0 7px rgba(255, 210, 77, 0.95));
+  animation-delay: 0.55s;
+}
+
+.guestSnapSpark--g {
+  bottom: 34%;
+  left: 14%;
+  width: 9px;
+  height: 9px;
+  background: #f7e07a;
+  filter: drop-shadow(0 0 5px rgba(247, 224, 122, 0.85));
+  animation-delay: 1.15s;
 }
 
 @keyframes guestSnapTwinkle {

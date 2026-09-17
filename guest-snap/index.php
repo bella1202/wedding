@@ -53,6 +53,8 @@ $homeUrl = assetUrl('/');
         <span class="guestSnapSpark guestSnapSpark--c"></span>
         <span class="guestSnapSpark guestSnapSpark--d"></span>
         <span class="guestSnapSpark guestSnapSpark--e"></span>
+        <span class="guestSnapSpark guestSnapSpark--f"></span>
+        <span class="guestSnapSpark guestSnapSpark--g"></span>
         <img
             class="guestSnap__illust"
             src="<?= e(assetUrl('/assets/images/guest-snap/couple.png')) ?>"
