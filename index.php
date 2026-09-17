@@ -78,6 +78,12 @@ $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
                 </span>
                 <span class="siteMenu__label">마음 전하기</span>
             </button>
+            <a class="siteMenu__item touchBtn" href="<?= e(assetUrl('/guest-snap/')) ?>" data-nav-href="guest-snap">
+                <span class="siteMenu__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v12H4z"/><path d="M8 7V5a4 4 0 018 0v2"/><circle cx="12" cy="13" r="2.2"/></svg>
+                </span>
+                <span class="siteMenu__label">게스트 스냅</span>
+            </a>
         </div>
     </div>
 </nav>

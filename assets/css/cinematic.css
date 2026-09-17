@@ -1380,6 +1380,7 @@
   background: transparent;
   border: 0;
   text-align: left;
+  text-decoration: none;
   transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 

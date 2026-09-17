@@ -163,6 +163,7 @@
     var backdrop = nav.querySelector("[data-menu-close]");
     var panel = nav.querySelector("[data-menu-panel]");
     var buttons = Array.from(nav.querySelectorAll("[data-nav-target]"));
+    var links = Array.from(nav.querySelectorAll("[data-nav-href]"));
 
     function isOpen() {
       return nav.classList.contains("isOpen");
@@ -215,6 +216,9 @@
           !!id && btn.getAttribute("data-nav-target") === id
         );
       });
+      links.forEach(function (link) {
+        link.classList.remove("isActive");
+      });
     }
 
     buttons.forEach(function (btn) {
@@ -229,6 +233,12 @@
         window.setTimeout(function () {
           el.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 80);
+      });
+    });
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function () {
+        closeMenu();
       });
     });
 

@@ -14,7 +14,27 @@ function weddingBasePath(): string
         return $base;
     }
 
-    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    // Always resolve to the wedding app root (folder that contains includes/),
+    // even when the active script lives in a subdirectory like /guest-snap/.
+    $weddingFsRoot = realpath(dirname(__DIR__));
+    $scriptFile = isset($_SERVER['SCRIPT_FILENAME'])
+        ? realpath((string) $_SERVER['SCRIPT_FILENAME'])
+        : false;
+    $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+
+    if ($weddingFsRoot && $scriptFile && str_starts_with($scriptFile, $weddingFsRoot)) {
+        $rel = substr($scriptFile, strlen($weddingFsRoot));
+        $rel = str_replace('\\', '/', $rel);
+        if ($rel !== '' && str_ends_with($scriptName, $rel)) {
+            $webRoot = substr($scriptName, 0, -strlen($rel));
+            $base = rtrim($webRoot, '/');
+            if ($base === '/' || $base === '\\') {
+                $base = '';
+            }
+            return $base;
+        }
+    }
+
     $base = rtrim(dirname($scriptName), '/');
     if ($base === '/' || $base === '\\') {
         $base = '';
