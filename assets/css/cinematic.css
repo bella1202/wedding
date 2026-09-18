@@ -1212,6 +1212,7 @@
 .scene--guestbook,
 .scene--share,
 .scene--account,
+.scene--guestSnap,
 .scene--contact,
 .scene--gallery {
   opacity: 0.55;
@@ -1225,6 +1226,7 @@
 .scene--guestbook.isInView,
 .scene--share.isInView,
 .scene--account.isInView,
+.scene--guestSnap.isInView,
 .scene--contact.isInView,
 .scene--gallery.isInView {
   opacity: 1;
@@ -1434,6 +1436,7 @@ body.isMenuOpen {
   .scene--guestbook,
   .scene--share,
   .scene--account,
+  .scene--guestSnap,
   .scene--contact,
   .scene--gallery,
   .dateHero,
@@ -1938,6 +1941,11 @@ body.isMenuOpen {
   color: rgba(34, 34, 34, 0.55);
 }
 
+.accountSheet__noteSee {
+  color: var(--cream);
+  opacity: 0.75;
+}
+
 .accountSheet {
   position: fixed;
   inset: 0;
@@ -2090,6 +2098,59 @@ body.isMenuOpen {
   font-size: 14px;
 }
 
+/* —— Guest Snap teaser —— */
+.scene--guestSnap {
+  text-align: center;
+  background: var(--bg-deep);
+  padding-top: 56px;
+  padding-bottom: 64px;
+}
+
+.scene--guestSnap .sceneLabel {
+  margin-bottom: 18px;
+}
+
+.guestSnapTeaser__illust {
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  margin: 0 auto 12px;
+  background: transparent;
+}
+
+.guestSnapTeaser__lead {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  opacity: 0.75;
+}
+
+.guestSnapTeaser__note {
+  margin: 18px 0 0;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+  color: rgba(56, 55, 55, 0.45);
+}
+
+.guestSnapTeaser__btn {
+  display: block;
+  width: 100%;
+  margin: 24px 0 0;
+  border: 1px solid var(--gold-muted);
+  background: transparent;
+  padding: 14px;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: var(--cream);
+  line-height: 1.4;
+}
+
 /* —— Ending —— */
 .scene--ending {
   min-height: 100dvh;
@@ -2098,7 +2159,7 @@ body.isMenuOpen {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: var(--bg-deep);
+  background: var(--bg-charcoal);
   padding: 80px 24px;
 }
 
@@ -2235,9 +2296,12 @@ body.isScrollLocked .floatingCouple {
 }
 
 .guestbook__lead {
-  font-size: 14px;
-  opacity: 0.62;
   margin: 0 0 24px;
+  font-size: 13px;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+  color: var(--cream);
+  opacity: 0.75;
 }
 
 .guestbookWrite {

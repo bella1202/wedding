@@ -66,22 +66,27 @@ $homeUrl = assetUrl('/');
     </div>
 
     <h1 class="guestSnap__heading">게스트 스냅</h1>
-    <p class="guestSnap__lead">신랑 신부의 행복한 순간을 담아주세요</p>
-
-    <p class="guestSnap__openNote">
-        <strong><?= e($openLabel) ?>부터</strong><br>
-        사진 및 영상 업로드가 가능합니다.
+    <p class="guestSnap__lead">
+        신랑 신부의 행복한 순간을<br>
+        사진 한 장 한 장에 예쁘게 담아주세요.<br><br>
+        저희의 특별한 하루를 함께해 주실<br>
+        스냅 작가님을 찾습니다.<br><br>
+        많은 관심과 참여 부탁드려요<i class="guestSnap__heart" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="12" height="12" focusable="false">
+                <path fill="currentColor" d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3z"/>
+            </svg>
+        </i>
     </p>
 
-    <div class="guestSnapRole" aria-hidden="true">
-        <span class="guestSnapRole__badge">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <p class="guestSnap__openPill">
+        <span class="guestSnap__openPillIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/>
-                <circle cx="12" cy="13" r="3.2"/>
+                <circle cx="12" cy="13" r="3"/>
             </svg>
         </span>
-        <p class="guestSnap__ctaCopy">저희의 스냅 작가가 되어주세요!</p>
-    </div>
+        <span><?= e($openLabel) ?>부터 업로드 가능</span>
+    </p>
 
     <section class="guestSnapMission" aria-labelledby="guestSnapMissionTitle">
         <div class="guestSnapMission__head">
@@ -96,7 +101,8 @@ $homeUrl = assetUrl('/');
                     'no' => '01',
                     'title' => '신부 대기실',
                     'desc' => '설렘 가득한 순간',
-                    'icon' => '<path d="M12 3c2.8 2.4 4.5 5.2 4.5 8.1A4.5 4.5 0 0112 15.6a4.5 4.5 0 01-4.5-4.5C7.5 8.2 9.2 5.4 12 3z"/><path d="M8.2 15.8c.9 1.7 2.2 3 3.8 4.2 1.6-1.2 2.9-2.5 3.8-4.2"/>',
+                    // vanity mirror
+                    'icon' => '<circle cx="12" cy="11" r="5.5"/><path d="M7.5 16.5h9"/><path d="M9 19h6"/><path d="M12 5.5V4"/><path d="M8.2 6.2l-1-1"/><path d="M15.8 6.2l1-1"/>',
                 ],
                 [
                     'no' => '02',
@@ -114,19 +120,22 @@ $homeUrl = assetUrl('/');
                     'no' => '04',
                     'title' => '행복한 피날레',
                     'desc' => '신랑신부 행진',
-                    'icon' => '<path d="M8 21l2-7 2 2 2-5 2 3 2-4"/><circle cx="8" cy="7" r="1.6"/><circle cx="14" cy="6" r="1.6"/><path d="M5 21h14"/>',
+                    // party popper
+                    'icon' => '<path d="M11 13c1.8 1.8 2.6 3.9 1.9 4.6-.7.7-2.8-.1-4.6-1.9-1.8-1.8-2.6-3.9-1.9-4.6.7-.7 2.8.1 4.6 1.9z"/><path d="M5.5 11.5 2.2 21.2l9.7-3.3"/><path d="M14 3.2c.5 1.8 1.6 2.9 3.4 3.5"/><path d="M16.8 2.5c.3 1.3 1 2.1 2.3 2.6"/><path d="M12.2 5.8c.6 1.4 1.7 2.3 3.2 2.9"/><path d="M18.5 9.2c.2.9.8 1.5 1.7 1.8"/><circle cx="20.2" cy="4.8" r=".7" fill="currentColor" stroke="none"/><circle cx="15.2" cy="2.8" r=".55" fill="currentColor" stroke="none"/><circle cx="21.2" cy="8.5" r=".55" fill="currentColor" stroke="none"/><circle cx="13.2" cy="4.2" r=".5" fill="currentColor" stroke="none"/>',
                 ],
                 [
                     'no' => '05',
                     'title' => '여러분의 미소',
-                    'desc' => '오늘 주인공은 여러분도!',
-                    'icon' => '<circle cx="9" cy="10" r="2.4"/><circle cx="15.5" cy="10" r="2.4"/><path d="M4.8 17.2c1.2-1.8 2.9-2.8 4.7-2.8.8 0 1.5.2 2.2.5"/><path d="M12.5 15c.7-.4 1.5-.6 2.4-.6 1.9 0 3.7 1.1 5 3"/>',
+                    'desc' => '오늘은 여러분도 주인공!',
+                    // guests with smiles
+                    'icon' => '<circle cx="8.5" cy="9" r="2.5"/><circle cx="15.5" cy="9" r="2.5"/><path d="M4.2 17.5c.9-2 2.4-3.1 4.3-3.1 1 0 1.9.3 2.6.9"/><path d="M12.9 15.3c.7-.5 1.6-.8 2.6-.8 1.9 0 3.4 1.1 4.3 3"/><path d="M7.2 9.8c.4.5.9.8 1.3.8s.9-.3 1.3-.8"/><path d="M14.2 9.8c.4.5.9.8 1.3.8s.9-.3 1.3-.8"/>',
                 ],
                 [
                     'no' => '06',
                     'title' => '감성 한 스푼',
                     'desc' => "예술이란 이런 것이다",
-                    'icon' => '<circle cx="12" cy="12" r="8"/><circle cx="9.2" cy="10.2" r="1.3"/><circle cx="13.8" cy="9.2" r="1.3"/><circle cx="15" cy="13.2" r="1.3"/><circle cx="10.5" cy="14.5" r="1.3"/>',
+                    // picture frame + spark
+                    'icon' => '<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M7 15l3.2-3.8 2.4 2.6L16 10l3 5"/><path d="M17.5 6.2l.5 1.2 1.2.5-1.2.5-.5 1.2-.5-1.2-1.2-.5 1.2-.5z"/>',
                 ],
             ];
             foreach ($missions as $mission):
@@ -146,77 +155,80 @@ $homeUrl = assetUrl('/');
 
         <div class="guestSnapReward">
             <span class="guestSnapReward__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 11h16v2a6 6 0 01-6 6h-4a6 6 0 01-6-6v-2z"/>
-                    <path d="M8 11V8.5A2.5 2.5 0 0110.5 6h3A2.5 2.5 0 0116 8.5V11"/>
-                    <path d="M9 17.5c.8.6 1.8 1 3 1s2.2-.4 3-1"/>
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                    <!-- spoon: pink handle first, gray head/neck on top -->
+                    <rect x="5.9" y="11.6" width="3.2" height="9" rx="1.6" fill="currentColor"/>
+                    <circle cx="7.5" cy="6.2" r="3.6" fill="#9a9a9a"/>
+                    <rect x="5.9" y="9.2" width="3.2" height="4.5" fill="#9a9a9a"/>
+                    <!-- fork: pink handle first, gray tines/neck on top -->
+                    <rect x="15.7" y="11.6" width="3.2" height="9" rx="1.6" fill="currentColor"/>
+                    <rect x="14.2" y="2.6" width="1.55" height="6.2" rx=".75" fill="#9a9a9a"/>
+                    <rect x="16.55" y="2.6" width="1.55" height="6.2" rx=".75" fill="#9a9a9a"/>
+                    <rect x="18.9" y="2.6" width="1.55" height="6.2" rx=".75" fill="#9a9a9a"/>
+                    <rect x="14.2" y="7.8" width="6.25" height="2.2" rx="1.1" fill="#9a9a9a"/>
+                    <rect x="15.7" y="9.4" width="3.2" height="4.5" fill="#9a9a9a"/>
                 </svg>
             </span>
             <p class="guestSnapReward__text">
-                가장 멋진 컷을 남겨주신 분께<br>
-                <strong>맛있는 밥 한끼</strong>를 쏩니다!
+                가장 멋진 순간을 담아주신 분께<br>
+                <strong>맛있는 식사 한 끼</strong>를 대접하겠습니다!
             </p>
         </div>
-
-        <p class="guestSnapMission__hint">
-            당일, 아래에서 바로 올려주세요.<br>
-            많은 참여 부탁드려요!
-        </p>
     </section>
 
-    <form class="guestSnapForm" data-guest-snap-form novalidate>
-        <div class="guestSnapForm__card">
-            <label class="guestSnapForm__field">
-                <span>성함</span>
-                <input
-                    type="text"
-                    name="name"
-                    maxlength="20"
-                    autocomplete="name"
-                    placeholder="홍길동"
-                    <?= $canUpload ? 'required' : 'disabled' ?>
-                >
-            </label>
-
-            <div class="guestSnapForm__field">
-                <span>사진 및 영상</span>
-                <label
-                    class="guestSnapDrop<?= $canUpload ? '' : ' isLocked' ?>"
-                    data-guest-snap-drop
-                >
-                    <input
-                        class="guestSnapDrop__input"
-                        type="file"
-                        name="files"
-                        accept="image/*,video/*"
-                        multiple
-                        data-guest-snap-files
-                        <?= $canUpload ? '' : 'disabled' ?>
-                    >
-                    <?php if (!$canUpload): ?>
-                        <p class="guestSnapDrop__lock"><?= e($openLabel) ?>에 오픈됩니다!</p>
-                    <?php endif; ?>
-                    <span class="guestSnapDrop__plus" aria-hidden="true">+</span>
-                    <span class="guestSnapDrop__label"><?= $canUpload ? '터치하여 추가' : '오픈 대기 중' ?></span>
-                </label>
-                <ul class="guestSnapDrop__preview" data-guest-snap-preview hidden></ul>
+    <div class="guestSnapFormWrap<?= $canUpload ? '' : ' isLocked' ?>">
+        <?php if (!$canUpload): ?>
+            <div class="guestSnapFormWrap__overlay" aria-hidden="true">
+                <p><?= e($openLabel) ?>에 오픈됩니다!</p>
             </div>
-        </div>
+        <?php endif; ?>
 
-        <p class="guestSnapForm__error" data-guest-snap-error hidden></p>
+        <form class="guestSnapForm" data-guest-snap-form novalidate>
+            <div class="guestSnapForm__card">
+                <label class="guestSnapForm__field">
+                    <span>성함</span>
+                    <input
+                        type="text"
+                        name="name"
+                        maxlength="20"
+                        autocomplete="name"
+                        placeholder="홍길동"
+                        <?= $canUpload ? 'required' : 'disabled' ?>
+                    >
+                </label>
 
-        <button
-            type="submit"
-            class="guestSnapForm__submit touchBtn"
-            data-guest-snap-submit
-            <?= $canUpload ? '' : 'disabled' ?>
-        >업로드</button>
+                <div class="guestSnapForm__field">
+                    <span>사진이나 영상을 업로드해주세요.</span>
+                    <label
+                        class="guestSnapDrop"
+                        data-guest-snap-drop
+                    >
+                        <input
+                            class="guestSnapDrop__input"
+                            type="file"
+                            name="files"
+                            accept="image/*,video/*"
+                            multiple
+                            data-guest-snap-files
+                            <?= $canUpload ? '' : 'disabled' ?>
+                        >
+                        <span class="guestSnapDrop__plus" aria-hidden="true">+</span>
+                        <span class="guestSnapDrop__label">터치하여 추가</span>
+                    </label>
+                    <ul class="guestSnapDrop__preview" data-guest-snap-preview hidden></ul>
+                </div>
+            </div>
 
-        <p class="guestSnapForm__soon" data-guest-snap-soon<?= $canUpload ? ' hidden' : '' ?>>
-            Google Drive 연동 업로드는 준비 중이며,<br>
-            예식 당일부터 활성화됩니다.
-        </p>
-    </form>
+            <p class="guestSnapForm__error" data-guest-snap-error hidden></p>
+
+            <button
+                type="submit"
+                class="guestSnapForm__submit touchBtn"
+                data-guest-snap-submit
+                <?= $canUpload ? '' : 'disabled' ?>
+            >업로드</button>
+        </form>
+    </div>
 
     <section class="guestSnapNotice" aria-labelledby="guestSnapNoticeTitle">
         <h2 class="guestSnapNotice__title" id="guestSnapNoticeTitle">업로드 주의사항</h2>
@@ -227,6 +239,8 @@ $homeUrl = assetUrl('/');
             <li>업로드 중 화면이 꺼지면 중단될 수 있으니, 화면이 켜진 상태로 진행해주세요.</li>
         </ul>
     </section>
+
+    <p class="guestSnapCopy">COPYRIGHT SR. All rights reserved.</p>
 </main>
 
 <script src="<?= e(assetUrl('/guest-snap/assets/js/guest-snap.js')) ?>"></script>

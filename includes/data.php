@@ -27,7 +27,7 @@ return [
         'displayTime' => '오전 11시',
         'displayTimeEn' => '11:00 AM',
         'venue' => '더컨벤션 신사',
-        'venueFull' => '더컨벤션 신사 4층 그랜드볼륨홀',
+        'venueFull' => '더컨벤션 신사 4층 그랜드볼룸홀',
         'venueEn' => 'THE CONVENTION SINSA',
         'address' => '서울 강남구 강남대로 652',
         'displayDateLine' => '2027. 09. 25. SAT 11:00 AM',

@@ -290,7 +290,8 @@
         if (
           bestId === "account" ||
           best.getAttribute("data-scene") === "account" ||
-          best.getAttribute("data-scene") === "share"
+          best.getAttribute("data-scene") === "share" ||
+          best.getAttribute("data-scene") === "guestSnap"
         ) {
           setActive("guestbook");
           return;
@@ -307,8 +308,8 @@
       }
     );
 
-    // 계좌·공유도 관찰해서 마음 전하기 메뉴 활성화 유지
-    ["account", "share"].forEach(function (id) {
+    // 계좌·공유·게스트스냅 소개도 관찰해서 마음 전하기 메뉴 활성화 유지
+    ["account", "share", "guestSnap"].forEach(function (id) {
       var el =
         document.getElementById(id) ||
         document.querySelector('[data-scene="' + id + '"]');
