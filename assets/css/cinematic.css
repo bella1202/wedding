@@ -2153,6 +2153,7 @@ body.isMenuOpen {
 
 /* —— Ending —— */
 .scene--ending {
+  position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -2160,7 +2161,9 @@ body.isMenuOpen {
   justify-content: center;
   text-align: center;
   background: var(--bg-charcoal);
-  padding: 80px 24px;
+  /* cover .filmApp bottom padding so body gray doesn't peek through */
+  margin-bottom: calc(-1 * var(--quick-nav-space));
+  padding: 80px 24px calc(max(48px, env(safe-area-inset-bottom)) + var(--quick-nav-space));
 }
 
 .endingMerge__date {
@@ -2189,6 +2192,18 @@ body.isMenuOpen {
   letter-spacing: 0.06em;
   opacity: 0.4;
   margin: 0;
+}
+
+.endingMerge__copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: rgba(56, 55, 55, 0.35);
+  text-align: center;
 }
 
 /* —— Floating couple (scroll outfit + pose) —— */

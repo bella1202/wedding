@@ -9,4 +9,5 @@ $footDate = str_replace('-', '.', $weddingDate);
     <p class="endingMerge__see">그날 뵙겠습니다</p>
     <p class="endingMerge__venue"></p>
     <p class="endingMerge__thanks">감사합니다.</p>
+    <p class="endingMerge__copy">COPYRIGHT SR. All rights reserved.</p>
 </footer>

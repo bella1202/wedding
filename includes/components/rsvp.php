@@ -105,7 +105,7 @@ $dateLine = sprintf(
                 <div class="rsvpForm__field" data-rsvp-attend-block>
                     <div class="rsvpForm__tripleLabels">
                         <span class="rsvpForm__tripleLabels--span2">참석 여부 <i class="rsvpForm__req" aria-hidden="true">*</i></span>
-                        <span data-rsvp-guests-label hidden>참석 인원 <i class="rsvpForm__req" aria-hidden="true">*</i></span>
+                        <span data-rsvp-guests-label hidden>본인포함 인원 <i class="rsvpForm__req" aria-hidden="true">*</i></span>
                     </div>
                     <div class="rsvpForm__chips rsvpForm__chips--2" data-rsvp-attend-grid role="radiogroup" aria-label="참석 여부">
                         <label class="rsvpForm__chip">

@@ -11,8 +11,7 @@ $venueLine = $w['venueFull'] ?? ($w['venue'] ?? '');
 ?>
 <div class="cinematicIntro" data-cinematic-intro role="dialog" aria-label="Opening">
     <div class="cinematicIntro__slides">
-        <p class="cinematicIntro__line isActive" data-intro-line>청첩장</p>
-        <p class="cinematicIntro__line" data-intro-line>
+        <p class="cinematicIntro__line isActive" data-intro-line>
             <span><?= e($g['name']) ?></span>
             <span class="cinematicIntro__amp">&amp;</span>
             <span><?= e($b['name']) ?></span>
