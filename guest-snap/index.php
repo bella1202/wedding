@@ -8,13 +8,9 @@ $weddingData = require dirname(__DIR__) . '/includes/data.php';
 $g = $weddingData['groom'];
 $b = $weddingData['bride'];
 $w = $weddingData['wedding'];
-$weddingDate = $w['date'] ?? '2027-09-25';
-[$yy, $mm, $dd] = array_map('intval', explode('-', $weddingDate));
-$openLabel = sprintf('%d년 %d월 %d일', $yy, $mm, $dd);
-
-$today = new DateTimeImmutable('today', new DateTimeZone('Asia/Seoul'));
-$openDate = new DateTimeImmutable($weddingDate, new DateTimeZone('Asia/Seoul'));
-$canUpload = $today >= $openDate;
+$openAt = guestSnapOpenAt($w);
+$openLabel = guestSnapOpenLabel($w);
+$canUpload = guestSnapCanUpload($w);
 
 $pageTitle = '게스트 스냅 · ' . ($g['name'] ?? '') . ' ♥ ' . ($b['name'] ?? '');
 $homeUrl = assetUrl('/');
@@ -44,7 +40,7 @@ $homeUrl = assetUrl('/');
 <main
     class="guestSnap"
     data-guest-snap
-    data-open-date="<?= e($weddingDate) ?>"
+    data-open-at="<?= e($openAt->format('c')) ?>"
     data-can-upload="<?= $canUpload ? '1' : '0' ?>"
 >
     <div class="guestSnapHero" aria-hidden="true">
@@ -186,19 +182,18 @@ $homeUrl = assetUrl('/');
         <form class="guestSnapForm" data-guest-snap-form novalidate>
             <div class="guestSnapForm__card">
                 <label class="guestSnapForm__field">
-                    <span>성함</span>
                     <input
                         type="text"
                         name="name"
                         maxlength="20"
                         autocomplete="name"
-                        placeholder="홍길동"
+                        placeholder="성함을 입력해주세요."
+                        aria-label="성함"
                         <?= $canUpload ? 'required' : 'disabled' ?>
                     >
                 </label>
 
                 <div class="guestSnapForm__field">
-                    <span>사진이나 영상을 업로드해주세요.</span>
                     <label
                         class="guestSnapDrop"
                         data-guest-snap-drop
@@ -212,8 +207,12 @@ $homeUrl = assetUrl('/');
                             data-guest-snap-files
                             <?= $canUpload ? '' : 'disabled' ?>
                         >
-                        <span class="guestSnapDrop__plus" aria-hidden="true">+</span>
-                        <span class="guestSnapDrop__label">터치하여 추가</span>
+                        <span class="guestSnapDrop__plus" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor" aria-hidden="true">
+                                <path d="M4 5.75A1.75 1.75 0 015.75 4h12.5A1.75 1.75 0 0120 5.75v12.5A1.75 1.75 0 0118.25 20H5.75A1.75 1.75 0 014 18.25V5.75zm2.2 11.5h11.6l-3.55-4.15a.9.9 0 00-1.38-.04l-2.12 2.3-1.28-1.4a.9.9 0 00-1.36.02L6.2 17.25zM9 10.1a1.85 1.85 0 100-3.7 1.85 1.85 0 000 3.7z"/>
+                            </svg>
+                        </span>
+                        <span class="guestSnapDrop__label">클릭하여<br>사진이나 영상을 업로드해주세요.</span>
                     </label>
                     <ul class="guestSnapDrop__preview" data-guest-snap-preview hidden></ul>
                 </div>

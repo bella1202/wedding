@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  var MAX_FILES = 8;
+
   function qs(sel, root) {
     return (root || document).querySelector(sel);
   }
@@ -16,6 +18,23 @@
     el.textContent = msg;
   }
 
+  function revokePreviewUrls(preview) {
+    if (!preview) return;
+    Array.prototype.forEach.call(preview.querySelectorAll("[data-preview-url]"), function (el) {
+      var url = el.getAttribute("data-preview-url");
+      if (url) URL.revokeObjectURL(url);
+    });
+  }
+
+  function syncInputFiles(fileInput, files) {
+    if (!fileInput || typeof DataTransfer === "undefined") return;
+    var dt = new DataTransfer();
+    files.forEach(function (file) {
+      dt.items.add(file);
+    });
+    fileInput.files = dt.files;
+  }
+
   function initGuestSnap() {
     var root = qs("[data-guest-snap]");
     if (!root) return;
@@ -26,26 +45,88 @@
     var preview = qs("[data-guest-snap-preview]", root);
     var errorEl = qs("[data-guest-snap-error]", root);
     var submitBtn = qs("[data-guest-snap-submit]", root);
+    var selectedFiles = [];
+
+    function renderPreview() {
+      if (!preview || !fileInput) return;
+      revokePreviewUrls(preview);
+      preview.innerHTML = "";
+
+      if (!selectedFiles.length) {
+        preview.hidden = true;
+        syncInputFiles(fileInput, []);
+        return;
+      }
+
+      preview.hidden = false;
+      selectedFiles.forEach(function (file, index) {
+        var li = document.createElement("li");
+        li.className = "guestSnapDrop__thumb";
+
+        var url = URL.createObjectURL(file);
+        var isVideo = file.type.indexOf("video/") === 0;
+        var media;
+
+        if (isVideo) {
+          media = document.createElement("video");
+          media.src = url;
+          media.muted = true;
+          media.playsInline = true;
+          media.preload = "metadata";
+          media.setAttribute("data-preview-url", url);
+          li.appendChild(media);
+
+          var badge = document.createElement("span");
+          badge.className = "guestSnapDrop__videoBadge";
+          badge.setAttribute("aria-hidden", "true");
+          badge.innerHTML =
+            '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 6.8v10.4L18 12 8 6.8z"/></svg>';
+          li.appendChild(badge);
+        } else {
+          media = document.createElement("img");
+          media.src = url;
+          media.alt = "";
+          media.setAttribute("data-preview-url", url);
+          li.appendChild(media);
+        }
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "guestSnapDrop__remove touchBtn";
+        removeBtn.setAttribute("aria-label", "삭제");
+        removeBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+        removeBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          selectedFiles.splice(index, 1);
+          syncInputFiles(fileInput, selectedFiles);
+          renderPreview();
+        });
+        li.appendChild(removeBtn);
+        preview.appendChild(li);
+      });
+
+      syncInputFiles(fileInput, selectedFiles);
+    }
 
     if (fileInput && preview) {
       fileInput.addEventListener("change", function () {
-        var files = Array.from(fileInput.files || []);
-        preview.innerHTML = "";
-        if (!files.length) {
-          preview.hidden = true;
-          return;
-        }
-        preview.hidden = false;
-        files.slice(0, 8).forEach(function (file) {
-          var li = document.createElement("li");
-          li.textContent = file.name;
-          preview.appendChild(li);
+        var incoming = Array.from(fileInput.files || []);
+        if (!incoming.length) return;
+
+        incoming.forEach(function (file) {
+          if (selectedFiles.length >= MAX_FILES) return;
+          selectedFiles.push(file);
         });
-        if (files.length > 8) {
-          var more = document.createElement("li");
-          more.textContent = "외 " + (files.length - 8) + "개";
-          preview.appendChild(more);
+
+        if (incoming.length && selectedFiles.length >= MAX_FILES) {
+          setError(errorEl, "최대 " + MAX_FILES + "개까지 업로드할 수 있어요.");
+        } else {
+          setError(errorEl, "");
         }
+
+        renderPreview();
       });
     }
 
@@ -56,7 +137,7 @@
       setError(errorEl, "");
 
       if (!canUpload) {
-        setError(errorEl, "예식 당일부터 업로드할 수 있어요.");
+        setError(errorEl, "아직 업로드 오픈 전이에요.");
         return;
       }
 
@@ -67,8 +148,7 @@
         return;
       }
 
-      var files = fileInput ? Array.from(fileInput.files || []) : [];
-      if (!files.length) {
+      if (!selectedFiles.length) {
         setError(errorEl, "사진 또는 영상을 선택해주세요.");
         return;
       }

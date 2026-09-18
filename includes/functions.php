@@ -76,6 +76,57 @@ function weddingDateTime(array $wedding): DateTimeImmutable
     return new DateTimeImmutable($date . ' ' . $time);
 }
 
+/**
+ * Guest Snap upload unlock datetime (Asia/Seoul).
+ * Prefer GUEST_SNAP_OPEN_AT in .env (Y-m-d H:i:s | Y-m-d\TH:i:s | Y-m-d).
+ */
+function guestSnapOpenAt(?array $wedding = null): DateTimeImmutable
+{
+    $tz = new DateTimeZone('Asia/Seoul');
+    $raw = env('GUEST_SNAP_OPEN_AT');
+
+    if (is_string($raw) && $raw !== '') {
+        foreach (['Y-m-d H:i:s', 'Y-m-d\TH:i:s', 'Y-m-d H:i', 'Y-m-d'] as $format) {
+            $dt = DateTimeImmutable::createFromFormat('!' . $format, $raw, $tz);
+            if ($dt instanceof DateTimeImmutable) {
+                return $dt;
+            }
+        }
+    }
+
+    if ($wedding !== null) {
+        $date = $wedding['date'] ?? '2027-09-25';
+        return new DateTimeImmutable($date . ' 00:00:00', $tz);
+    }
+
+    return new DateTimeImmutable('2027-09-25 00:00:00', $tz);
+}
+
+function guestSnapCanUpload(?array $wedding = null, ?DateTimeImmutable $now = null): bool
+{
+    $tz = new DateTimeZone('Asia/Seoul');
+    $now = $now ?? new DateTimeImmutable('now', $tz);
+
+    return $now >= guestSnapOpenAt($wedding);
+}
+
+function guestSnapOpenLabel(?array $wedding = null): string
+{
+    $dt = guestSnapOpenAt($wedding);
+    $label = sprintf(
+        '%d년 %d월 %d일',
+        (int) $dt->format('Y'),
+        (int) $dt->format('n'),
+        (int) $dt->format('j')
+    );
+
+    if ($dt->format('H:i:s') !== '00:00:00') {
+        $label .= ' ' . $dt->format('H:i');
+    }
+
+    return $label;
+}
+
 function buildIcsContent(array $weddingData): string
 {
     $wedding = $weddingData['wedding'];

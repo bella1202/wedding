@@ -1,9 +1,7 @@
 <?php
 /** @var array $weddingData */
 $w = $weddingData['wedding'];
-$weddingDate = $w['date'] ?? '2027-09-25';
-[$yy, $mm, $dd] = array_map('intval', explode('-', $weddingDate));
-$openLabel = sprintf('%d년 %d월 %d일', $yy, $mm, $dd);
+$openLabel = guestSnapOpenLabel($w);
 $guestSnapUrl = assetUrl('/guest-snap/');
 ?>
 <section
