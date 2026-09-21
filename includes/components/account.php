@@ -4,7 +4,7 @@ $accounts = $weddingData['accounts'];
 $hasGroom = !empty($accounts['groom']);
 $hasBride = !empty($accounts['bride']);
 ?>
-<section class="scene scene--account scene--flow" data-scene="account" data-couple-state="heart" id="account">
+<section class="scene scene--account scene--flow" data-scene="account" data-couple-state="ending" id="account">
     <div class="accountIntro">
         <button type="button" class="accountSheet__open touchBtn" data-account-open>마음 전하실 곳</button>
         <img

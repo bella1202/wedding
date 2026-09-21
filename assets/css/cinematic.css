@@ -2280,8 +2280,8 @@ body.isMenuOpen {
 .floatingCouple {
   --couple-scale: 1;
   position: fixed;
-  right: clamp(10px, 3vw, 14px);
-  bottom: var(--quick-nav-space);
+  right: 6px;
+  bottom: calc(4px + env(safe-area-inset-bottom, 0px));
   z-index: 40;
   width: clamp(115px, 31vw, 145px);
   pointer-events: none;
@@ -2349,8 +2349,8 @@ body.isScrollLocked .floatingCouple {
 
 @media (min-width: 768px) {
   .floatingCouple {
-    right: 22px;
-    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    right: 8px;
+    bottom: calc(4px + env(safe-area-inset-bottom, 0px));
     width: clamp(140px, 14vw, 180px);
   }
 }

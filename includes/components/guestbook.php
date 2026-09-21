@@ -1,7 +1,7 @@
 <?php
 /** @var array $weddingData */
 ?>
-<section class="scene scene--guestbook scene--flow" data-scene="guestbook" id="guestbook" data-couple-state="heart">
+<section class="scene scene--guestbook scene--flow" data-scene="guestbook" id="guestbook" data-couple-state="ending">
     <p class="sceneLabel">방명록</p>
     <p class="guestbook__lead">따뜻한 한마디를 남겨주세요</p>
 
