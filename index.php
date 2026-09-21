@@ -13,6 +13,7 @@ $weddingAt = weddingDateTime($w)->format('c');
 $pageTitle = $g['name'] . ' ♥ ' . $b['name'] . ' · Wedding Film';
 
 $kakaoJavaScriptKey = env('KAKAO_JAVASCRIPT_KEY');
+$kakaoShareTemplateId = env('KAKAO_SHARE_TEMPLATE_ID');
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -117,6 +118,23 @@ window.__weddingKakaoReady = new Promise(function (resolve) {
     onload="window.__resolveWeddingKakao && window.__resolveWeddingKakao()"
     onerror="window.__resolveWeddingKakao && window.__resolveWeddingKakao(new Error('sdk'))"
 ></script>
+<?php if (!empty($kakaoShareTemplateId)): ?>
+<script>
+window.__weddingKakaoShare = {
+  appKey: <?= json_encode($kakaoJavaScriptKey, JSON_UNESCAPED_UNICODE) ?>,
+  templateId: <?= (int) $kakaoShareTemplateId ?>
+};
+window.__weddingKakaoShareReady = new Promise(function (resolve) {
+  window.__resolveWeddingKakaoShare = resolve;
+});
+</script>
+<script
+    src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.3/kakao.min.js"
+    crossorigin="anonymous"
+    onload="window.__resolveWeddingKakaoShare && window.__resolveWeddingKakaoShare()"
+    onerror="window.__resolveWeddingKakaoShare && window.__resolveWeddingKakaoShare(new Error('kakao-share-sdk'))"
+></script>
+<?php endif; ?>
 <?php endif; ?>
 <script src="<?= e(assetUrl('/assets/js/common.js')) ?>"></script>
 <script src="<?= e(assetUrl('/assets/js/gallery.js')) ?>"></script>

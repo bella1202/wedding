@@ -201,6 +201,12 @@
       });
     });
 
+    if (window.weddingCommon && window.weddingCommon.bindSheetDragDismiss) {
+      window.weddingCommon.bindSheetDragDismiss(modal, function () {
+        closeModal(modal);
+      });
+    }
+
     qsa("[data-rsvp-open]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         setError(errorEl, "");

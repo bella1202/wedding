@@ -1564,6 +1564,8 @@ body.isMenuOpen {
   scroll-snap-type: x mandatory;
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
   cursor: grab;
 }
 
@@ -1692,12 +1694,37 @@ body.isMenuOpen {
   border: 1px solid var(--line);
   display: flex;
   flex-direction: column;
+  /* 세로 스크롤 제스처는 페이지로 통과 */
+  touch-action: pan-y;
 }
 
 .kakaoMap__canvas {
   flex: 1 1 auto;
   width: 100%;
   min-height: 0;
+  touch-action: pan-y;
+}
+
+.kakaoMap:not(.isMapInteractive)::after {
+  content: "지도를 터치하면 이동할 수 있어요";
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(34, 34, 34, 0.55);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: -0.01em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.kakaoMap.isMapInteractive::after,
+.kakaoMap.isFallback::after {
+  display: none;
 }
 
 .kakaoMapOverlay {
@@ -2044,13 +2071,20 @@ body.isMenuOpen {
   padding: 12px 0 8px;
 }
 
-@keyframes sheetUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.accountSheet__panel::before,
+.contactSheet__panel::before,
+.guestbookSheet__panel::before,
+.guestbookAll__panel::before,
+.rsvpModal__panel::before {
+  touch-action: none;
+}
+
+.accountSheet__panel.isDragging,
+.contactSheet__panel.isDragging,
+.guestbookSheet__panel.isDragging,
+.guestbookAll__panel.isDragging,
+.rsvpModal__panel.isDragging {
+  transition: none !important;
 }
 
 .accountRow {

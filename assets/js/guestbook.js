@@ -322,6 +322,10 @@
       el.addEventListener("click", closeWriteSheet);
     });
 
+    if (window.weddingCommon && window.weddingCommon.bindSheetDragDismiss) {
+      window.weddingCommon.bindSheetDragDismiss(sheet, closeWriteSheet);
+    }
+
     qsa("[data-guestbook-legal-open]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         openLegalModal(btn.getAttribute("data-guestbook-legal-open") || "privacy");
@@ -356,6 +360,10 @@
     qsa("[data-guestbook-all-close]", modal).forEach(function (el) {
       el.addEventListener("click", closeAllModal);
     });
+
+    if (window.weddingCommon && window.weddingCommon.bindSheetDragDismiss) {
+      window.weddingCommon.bindSheetDragDismiss(modal, closeAllModal);
+    }
 
     var allMore = qs("[data-guestbook-all-more]", modal);
     if (allMore) {

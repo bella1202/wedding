@@ -96,7 +96,22 @@
         var map = new kakao.maps.Map(canvas, {
           center: center,
           level: 5, // 한 단계 축소 (숫자가 클수록 멀리 보임)
+          // 모바일에서 페이지 세로 스크롤이 지도에 먹히지 않도록
+          draggable: false,
+          scrollwheel: false,
+          disableDoubleClickZoom: true,
+          keyboardShortcuts: false,
         });
+
+        // 지도 위를 한 번 길게 누르거나 더블탭하면 이동 가능 (선택적)
+        var mapUnlocked = false;
+        function unlockMapDrag() {
+          if (mapUnlocked) return;
+          mapUnlocked = true;
+          map.setDraggable(true);
+          root.classList.add("isMapInteractive");
+        }
+        kakao.maps.event.addListener(map, "click", unlockMapDrag);
 
         new kakao.maps.Marker({
           position: center,
