@@ -66,36 +66,37 @@
 
   function bindSheetDragDismiss(sheet, closeFn) {
     if (!sheet || typeof closeFn !== "function") return;
+    if (sheet.getAttribute("data-sheet-drag-bound") === "1") return;
+    sheet.setAttribute("data-sheet-drag-bound", "1");
 
-    var panel = sheet.querySelector("[class*='__panel']");
+    var panel = sheet.querySelector(":scope > [class*='__panel']");
+    if (!panel) {
+      panel = sheet.querySelector("[class*='__panel']");
+    }
     if (!panel) return;
 
-    var HANDLE_ZONE = 56;
-    var DISMISS_PX = 110;
-    var DISMISS_VELOCITY = 0.65;
+    var DISMISS_PX = 88;
+    var DISMISS_VELOCITY = 0.45;
     var startY = 0;
-    var lastY = 0;
-    var lastT = 0;
     var dy = 0;
     var dragging = false;
     var activePointer = null;
-    var canDrag = false;
+    var samples = [];
+    var prevOverflowY = "";
 
-    function scrollParent(el) {
-      var node = el;
-      while (node && node !== panel) {
-        if (node.scrollHeight > node.clientHeight + 1) {
-          var style = window.getComputedStyle(node);
-          var oy = style.overflowY;
-          if (oy === "auto" || oy === "scroll" || oy === "overlay") {
-            return node;
-          }
-        }
-        node = node.parentElement;
-      }
-      if (panel.scrollHeight > panel.clientHeight + 1) return panel;
-      return null;
+    function ensureHandle() {
+      var handle = panel.querySelector("[data-sheet-handle]");
+      if (handle) return handle;
+      handle = document.createElement("div");
+      handle.className = "sheetDragHandle";
+      handle.setAttribute("data-sheet-handle", "");
+      handle.setAttribute("aria-hidden", "true");
+      panel.insertBefore(handle, panel.firstChild);
+      return handle;
     }
+
+    var handle = ensureHandle();
+    panel.classList.add("hasSheetDragHandle");
 
     function resetPanel(animate) {
       panel.style.transition = animate
@@ -103,6 +104,10 @@
         : "";
       panel.style.transform = "";
       panel.classList.remove("isDragging");
+      if (prevOverflowY !== "") {
+        panel.style.overflowY = prevOverflowY;
+        prevOverflowY = "";
+      }
       window.setTimeout(function () {
         if (!panel.classList.contains("isDragging")) {
           panel.style.transition = "";
@@ -110,85 +115,89 @@
       }, 300);
     }
 
+    function pushSample(y) {
+      var now = Date.now();
+      samples.push({ y: y, t: now });
+      while (samples.length > 5) samples.shift();
+    }
+
+    function velocityY() {
+      if (samples.length < 2) return 0;
+      var first = samples[0];
+      var last = samples[samples.length - 1];
+      var elapsed = Math.max(1, last.t - first.t);
+      return (last.y - first.y) / elapsed;
+    }
+
     function onPointerDown(e) {
       if (!sheet.classList.contains("isOpen")) return;
       if (activePointer !== null) return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
 
-      var target = e.target;
-      if (
-        target.closest(
-          "button, a, input, textarea, select, label, [role='tab'], [data-copy-target]"
-        )
-      ) {
-        var rectEarly = panel.getBoundingClientRect();
-        if (e.clientY - rectEarly.top > HANDLE_ZONE) return;
-      }
-
-      var rect = panel.getBoundingClientRect();
-      var fromHandle = e.clientY - rect.top <= HANDLE_ZONE;
-      // 핸들 바 영역에서만 드래그 닫기 (본문 스크롤과 충돌 방지)
-      canDrag = fromHandle;
-      if (!canDrag) return;
+      // 핸들 바에서만 드래그 닫기 (본문 스크롤과 분리)
+      if (!handle.contains(e.target) && e.target !== handle) return;
 
       activePointer = e.pointerId;
       startY = e.clientY;
-      lastY = e.clientY;
-      lastT = Date.now();
       dy = 0;
       dragging = false;
+      samples = [];
+      pushSample(e.clientY);
       try {
-        panel.setPointerCapture(e.pointerId);
+        handle.setPointerCapture(e.pointerId);
       } catch (err) {
-        /* ignore */
+        try {
+          panel.setPointerCapture(e.pointerId);
+        } catch (err2) {
+          /* ignore */
+        }
       }
     }
 
     function onPointerMove(e) {
-      if (activePointer !== e.pointerId || !canDrag) return;
+      if (activePointer !== e.pointerId) return;
 
       var delta = e.clientY - startY;
       if (!dragging) {
-        if (delta < 8) return;
-        var scroller = scrollParent(e.target);
-        var rect = panel.getBoundingClientRect();
-        var fromHandle = startY - rect.top <= HANDLE_ZONE;
-        if (!fromHandle && scroller && scroller.scrollTop > 0) {
+        if (delta < 6) return;
+        if (delta < 0) {
           activePointer = null;
-          canDrag = false;
           return;
         }
         dragging = true;
         panel.classList.add("isDragging");
         panel.style.transition = "none";
+        prevOverflowY = panel.style.overflowY;
+        panel.style.overflowY = "hidden";
       }
 
       dy = Math.max(0, delta);
       panel.style.transform = "translateY(" + dy + "px)";
-      lastY = e.clientY;
-      lastT = Date.now();
+      pushSample(e.clientY);
       if (e.cancelable) e.preventDefault();
     }
 
     function onPointerUp(e) {
       if (activePointer !== e.pointerId) return;
       activePointer = null;
-      canDrag = false;
 
       if (!dragging) {
         resetPanel(false);
         return;
       }
 
-      var elapsed = Math.max(1, Date.now() - lastT);
-      var velocity = (e.clientY - lastY) / elapsed;
-      var shouldClose = dy >= DISMISS_PX || velocity > DISMISS_VELOCITY;
+      pushSample(e.clientY);
+      var shouldClose = dy >= DISMISS_PX || velocityY() > DISMISS_VELOCITY;
 
       if (shouldClose) {
         panel.style.transition =
           "transform 0.24s cubic-bezier(0.22, 1, 0.36, 1)";
         panel.style.transform = "translateY(110%)";
         panel.classList.remove("isDragging");
+        if (prevOverflowY !== "") {
+          panel.style.overflowY = prevOverflowY;
+          prevOverflowY = "";
+        }
         window.setTimeout(function () {
           closeFn();
           panel.style.transition = "";
@@ -200,10 +209,10 @@
       dragging = false;
     }
 
-    panel.addEventListener("pointerdown", onPointerDown);
-    panel.addEventListener("pointermove", onPointerMove);
-    panel.addEventListener("pointerup", onPointerUp);
-    panel.addEventListener("pointercancel", onPointerUp);
+    handle.addEventListener("pointerdown", onPointerDown);
+    handle.addEventListener("pointermove", onPointerMove, { passive: false });
+    handle.addEventListener("pointerup", onPointerUp);
+    handle.addEventListener("pointercancel", onPointerUp);
   }
 
   function initBottomSheet(options) {

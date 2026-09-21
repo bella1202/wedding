@@ -2071,12 +2071,48 @@ body.isMenuOpen {
   padding: 12px 0 8px;
 }
 
-.accountSheet__panel::before,
-.contactSheet__panel::before,
-.guestbookSheet__panel::before,
-.guestbookAll__panel::before,
-.rsvpModal__panel::before {
+/* Real drag handle (injected by JS). ::before bars are visual-only and
+   cannot receive touch-action / pointer capture reliably. */
+.sheetDragHandle {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  height: 28px;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
   touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+}
+
+.sheetDragHandle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 36px;
+  height: 4px;
+  margin: -2px 0 0 -18px;
+  border-radius: 999px;
+  background: rgba(34, 34, 34, 0.16);
+  pointer-events: none;
+}
+
+.sheetDragHandle:active {
+  cursor: grabbing;
+}
+
+.accountSheet__panel.hasSheetDragHandle::before,
+.contactSheet__panel.hasSheetDragHandle::before,
+.guestbookSheet__panel.hasSheetDragHandle::before,
+.guestbookAll__panel.hasSheetDragHandle::before,
+.rsvpModal__panel.hasSheetDragHandle::before {
+  content: none;
+  display: none;
 }
 
 .accountSheet__panel.isDragging,
