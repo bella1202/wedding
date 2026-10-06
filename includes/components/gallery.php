@@ -3,7 +3,7 @@
 $images = $weddingData['gallery'] ?? [];
 $messages = $weddingData['polaroidMessages'] ?? [];
 ?>
-<section class="scene scene--gallery scene--flow" data-scene="gallery" id="gallery" data-couple-state="heart">
+<section class="scene scene--gallery scene--flow" data-scene="gallery" id="gallery" data-couple-state="date">
     <p class="sceneLabel">갤러리</p>
 
     <div class="stillPair">

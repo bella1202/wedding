@@ -7,7 +7,7 @@ $guestSnapUrl = assetUrl('/guest-snap/');
 <section
     class="scene scene--guestSnap scene--flow"
     data-scene="guestSnap"
-    data-couple-state="heart"
+    data-couple-state="ending"
     id="guestSnap"
 >
     <p class="sceneLabel">게스트 스냅</p>
