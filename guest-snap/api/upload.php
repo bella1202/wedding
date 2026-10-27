@@ -51,6 +51,11 @@ try {
         }
     }
 
+    if (trim((string) ($_POST['privacy'] ?? '')) !== '1') {
+        http_response_code(422);
+        throw new InvalidArgumentException('개인정보 처리방침과 이용약관에 동의해주세요.');
+    }
+
     $contact = snapContact($_POST['name'] ?? null, $_POST['phone'] ?? null);
 
     $photo = $_FILES['photo'] ?? null;

@@ -71,7 +71,7 @@ class SnapRepository
         $statement->execute([$record['batch_key']]);
 
         if ((int) $statement->fetchColumn() >= SNAP_MAX_FILES) {
-            throw new InvalidArgumentException('한 번에 최대 8장까지 가능합니다.');
+            throw new InvalidArgumentException('한 번에 최대 ' . SNAP_MAX_FILES . '장까지 가능합니다.');
         }
 
         $columns = implode(', ', array_keys($record));

@@ -185,18 +185,13 @@ $homeUrl = assetUrl('/');
         <form class="guestSnapForm" data-guest-snap-form method="post" enctype="multipart/form-data" novalidate action="<?= e(assetUrl('/guest-snap/api/upload.php')) ?>">
             <input type="hidden" name="csrf" value="<?= e($_SESSION['snap_csrf']) ?>">
             <div class="guestSnapForm__card">
-                <div class="guestSnapForm__heading">
-                    <h2>함께 담은 순간을 보내주세요</h2>
-                    <p>사진은 신랑·신부만 확인할 수 있어요.</p>
-                </div>
                 <label class="guestSnapForm__field">
-                    <span>성함 <small>필수</small></span>
                     <input
                         type="text"
                         name="name"
                         maxlength="20"
                         autocomplete="name"
-                        placeholder="성함을 입력해주세요."
+                        placeholder="성함"
                         required
                         aria-label="성함"
                         <?= $canUpload ? '' : 'disabled' ?>
@@ -204,20 +199,19 @@ $homeUrl = assetUrl('/');
                 </label>
 
                 <label class="guestSnapForm__field">
-                    <span>전화번호 <small>필수</small></span>
                     <input
                         type="tel"
                         name="phone"
-                        maxlength="30"
+                        maxlength="13"
                         autocomplete="tel"
-                        inputmode="tel"
-                        placeholder="010-1234-5678"
-                        aria-label="전화번호"
+                        inputmode="numeric"
+                        placeholder="연락처"
+                        aria-label="연락처"
+                        data-guest-snap-phone
                         required
                         <?= $canUpload ? '' : 'disabled' ?>
                     >
                 </label>
-                <p class="guestSnapForm__help">이름과 전화번호는 사진 확인 및 연락에 사용하며, 저장 파일명에도 포함됩니다.</p>
 
                 <div class="guestSnapForm__field">
                     <label
@@ -240,12 +234,34 @@ $homeUrl = assetUrl('/');
                             </svg>
                         </span>
                         <span class="guestSnapDrop__label">클릭하여<br>사진을 선택해주세요.</span>
+                        <span class="guestSnapDrop__hint" id="guestSnapFileHelp">최대 <?= SNAP_MAX_FILES ?>장 · 장당 <?= (int) (SNAP_MAX_BYTES / 1024 / 1024) ?>MB · JPEG, PNG, WebP</span>
                     </label>
-                    <p class="guestSnapForm__help" id="guestSnapFileHelp">최대 8장 · 장당 15MB · JPEG, PNG, WebP</p>
-                    <p class="guestSnapForm__selection" data-guest-snap-selection aria-live="polite">아직 선택한 사진이 없어요.</p>
+                    <div class="guestSnapForm__selection" data-guest-snap-selection hidden>
+                        <span class="guestSnapForm__selectionLead">
+                            <span class="guestSnapForm__selectionCount" data-guest-snap-selection-count></span>
+                            <span class="guestSnapForm__overBadge" data-guest-snap-over-badge hidden>초과</span>
+                        </span>
+                        <span class="guestSnapForm__selectionSize" data-guest-snap-selection-size></span>
+                    </div>
                     <ul class="guestSnapDrop__preview" data-guest-snap-preview hidden></ul>
                 </div>
             </div>
+
+            <label class="guestSnapForm__consent">
+                <input
+                    type="checkbox"
+                    name="privacy"
+                    value="1"
+                    data-guest-snap-privacy
+                    required
+                    <?= $canUpload ? '' : 'disabled' ?>
+                >
+                <span class="guestSnapForm__consentText">
+                    <button type="button" class="guestSnapForm__legalLink" data-guest-snap-legal-open="privacy">개인정보 처리방침</button>과
+                    <button type="button" class="guestSnapForm__legalLink" data-guest-snap-legal-open="terms">이용약관</button>에
+                    동의합니다.
+                </span>
+            </label>
 
             <p class="guestSnapForm__error" data-guest-snap-error role="status" aria-live="polite" hidden></p>
             <progress data-guest-snap-progress max="100" value="0" aria-label="사진 전송 진행률" hidden></progress>
@@ -261,10 +277,19 @@ $homeUrl = assetUrl('/');
         </form>
     </div>
 
+    <div class="guestSnapViewer" data-guest-snap-viewer hidden aria-hidden="true">
+        <div class="guestSnapViewer__backdrop" data-guest-snap-viewer-close></div>
+        <div class="guestSnapViewer__panel" role="dialog" aria-modal="true" aria-label="사진 미리보기">
+            <button type="button" class="guestSnapViewer__close touchBtn" data-guest-snap-viewer-close aria-label="닫기">&times;</button>
+            <img class="guestSnapViewer__image" data-guest-snap-viewer-image src="" alt="">
+            <p class="guestSnapViewer__reason" data-guest-snap-viewer-reason hidden></p>
+        </div>
+    </div>
+
     <section class="guestSnapNotice" aria-labelledby="guestSnapNoticeTitle">
         <h2 class="guestSnapNotice__title" id="guestSnapNoticeTitle">업로드 주의사항</h2>
         <ul class="guestSnapNotice__list">
-            <li>한 번에 최대 8장까지 업로드하실 수 있어요.</li>
+            <li>한 번에 최대 <?= SNAP_MAX_FILES ?>장까지 업로드하실 수 있어요.</li>
             <li>여러 번 나누어 업로드하실 수 있어요.</li>
             <li>JPEG·PNG·WebP 사진은 장당 15MB, 2,400만 화소 이하로 첨부해주세요.</li>
             <li>HEIC 사진은 JPEG로 변환 후 선택해주세요.</li>
@@ -275,6 +300,8 @@ $homeUrl = assetUrl('/');
 
     <p class="guestSnapCopy">COPYRIGHT SR. All rights reserved.</p>
 </main>
+
+<?php require dirname(__DIR__) . '/includes/components/guestbook-legal.php'; ?>
 
 <script src="<?= e(assetUrl('/guest-snap/assets/js/guest-snap.js')) ?>"></script>
 </body>
