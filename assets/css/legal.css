@@ -1,0 +1,71 @@
+/* /privacy · /terms — standalone legal documents */
+
+.legalBody {
+  min-height: 100dvh;
+  background: #f7f5f2;
+}
+
+.legalPage {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding:
+    max(40px, env(safe-area-inset-top))
+    24px
+    max(40px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.legalPage__header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.legalPage__brand {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.36em;
+  color: rgba(34, 34, 34, 0.45);
+}
+
+.legalPage__title {
+  margin: 10px 0 0;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: #222222;
+}
+
+.legalPage__body {
+  font-size: 13px;
+  line-height: 1.75;
+  letter-spacing: -0.01em;
+  color: rgba(34, 34, 34, 0.82);
+}
+
+.legalPage__body p {
+  margin: 0 0 16px;
+}
+
+.legalPage__body p:last-child {
+  margin-bottom: 0;
+}
+
+.legalPage__body strong {
+  font-weight: 500;
+  color: #222222;
+}
+
+.legalPage__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 36px;
+  padding: 14px 20px;
+  border: 1px solid rgba(212, 137, 154, 0.32);
+  background: #ffffff;
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: #222222;
+}
