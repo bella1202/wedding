@@ -139,11 +139,7 @@ a {
 }
 
 .galleryViewer__caption {
-  text-align: center;
-  font-size: 11px;
-  letter-spacing: 0.25em;
-  margin-top: 12px;
-  opacity: 0.7;
+  display: none;
 }
 
 .touchBtn.isCopied [data-copy-label],

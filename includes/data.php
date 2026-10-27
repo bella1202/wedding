@@ -67,6 +67,10 @@ return [
         '/assets/images/placeholder/06.JPG',
     ],
 
+    'ending' => [
+        'image' => '/assets/images/placeholder/ending.JPG',
+    ],
+
     'outfit' => [
         'states' => [
             'casual' => '/assets/images/couple/01-casual.png',

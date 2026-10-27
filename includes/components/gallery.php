@@ -1,52 +1,85 @@
 <?php
 /** @var array $weddingData */
 $images = array_values($weddingData['gallery'] ?? []);
-$highlights = array_slice($images, 0, 3);
-$strip = array_slice($images, 3);
+$orientations = [
+    0 => 'portrait',
+    1 => 'landscape',
+    2 => 'portrait',
+    3 => 'portrait',
+    4 => 'portrait',
+    5 => 'portrait',
+];
+
+$photos = [];
+foreach ($images as $index => $src) {
+    $no = sprintf('%02d', $index + 1);
+    $photos[] = [
+        'id' => $index,
+        'src' => assetUrl($src),
+        'caption' => 'PHOTO ' . $no,
+        'orient' => $orientations[$index] ?? 'portrait',
+    ];
+}
+
+$feature = $photos[0] ?? null;
+$strip = array_slice($photos, 1);
+$galleryJson = htmlspecialchars(
+    json_encode($photos, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+    ENT_QUOTES,
+    'UTF-8'
+);
 ?>
-<section class="scene scene--gallery scene--flow" data-scene="gallery" id="gallery" data-couple-state="date">
+<section
+    class="scene scene--gallery scene--flow"
+    data-scene="gallery"
+    id="gallery"
+    data-couple-state="date"
+    data-gallery
+    data-gallery-items="<?= $galleryJson ?>"
+>
     <p class="sceneLabel">갤러리</p>
 
-    <div class="stillPair">
-        <?php if (!empty($highlights[0])): ?>
-            <button type="button" class="stillFrame stillFrame--tall touchBtn" data-gallery-index="0" data-gallery-src="<?= e(assetUrl($highlights[0])) ?>">
-                <img src="<?= e(assetUrl($highlights[0])) ?>" alt="PHOTO 01" loading="lazy">
-                <span class="stillFrame__label">PHOTO 01</span>
-            </button>
-        <?php endif; ?>
-        <?php if (!empty($highlights[1])): ?>
-            <button type="button" class="stillFrame stillFrame--tall touchBtn" data-gallery-index="1" data-gallery-src="<?= e(assetUrl($highlights[1])) ?>">
-                <img src="<?= e(assetUrl($highlights[1])) ?>" alt="PHOTO 02" loading="lazy">
-                <span class="stillFrame__label">PHOTO 02</span>
-            </button>
-        <?php endif; ?>
-    </div>
-
-    <?php if (!empty($highlights[2])): ?>
-        <button type="button" class="stillFrame stillFrame--full touchBtn" data-gallery-index="2" data-gallery-src="<?= e(assetUrl($highlights[2])) ?>">
-            <img src="<?= e(assetUrl($highlights[2])) ?>" alt="PHOTO 03" loading="lazy">
-            <span class="stillFrame__label">PHOTO 03</span>
+    <?php if ($feature): ?>
+        <button
+            type="button"
+            class="stillFrame stillFrame--feature touchBtn"
+            data-gallery-feature
+            data-gallery-id="<?= (int) $feature['id'] ?>"
+            aria-label="<?= e($feature['caption']) ?> 크게 보기"
+        >
+            <img
+                data-gallery-feature-image
+                src="<?= e($feature['src']) ?>"
+                alt=""
+                loading="eager"
+            >
+            <span class="stillFrame__expand" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 15 6 6"/>
+                    <path d="m15 9 6-6"/>
+                    <path d="M21 16.2V21h-4.8"/>
+                    <path d="M21 7.8V3h-4.8"/>
+                    <path d="M3 16.2V21h4.8"/>
+                    <path d="m3 21 6-6"/>
+                    <path d="M3 7.8V3h4.8"/>
+                    <path d="M9 9 3 3"/>
+                </svg>
+            </span>
         </button>
     <?php endif; ?>
 
     <?php if (!empty($strip)): ?>
         <div class="filmStrip" data-film-strip>
-            <p class="filmStrip__label">사진 · 옆으로 넘겨보세요</p>
-            <div class="filmStrip__track" data-film-track>
-                <?php foreach ($strip as $i => $src): ?>
-                    <?php
-                    $galleryIndex = $i + 3;
-                    $photoNo = sprintf('%02d', $galleryIndex + 1);
-                    ?>
+            <div class="filmStrip__track" data-film-track data-gallery-strip>
+                <?php foreach ($strip as $item): ?>
                     <button
                         type="button"
                         class="filmStrip__frame touchBtn"
-                        data-gallery-index="<?= (int) $galleryIndex ?>"
-                        data-gallery-src="<?= e(assetUrl($src)) ?>"
-                        data-gallery-caption="PHOTO <?= e($photoNo) ?>"
+                        data-gallery-strip-item
+                        data-gallery-id="<?= (int) $item['id'] ?>"
+                        aria-label="<?= e($item['caption']) ?> 선택"
                     >
-                        <img src="<?= e(assetUrl($src)) ?>" alt="PHOTO <?= e($photoNo) ?>">
-                        <span class="filmStrip__caption">PHOTO <?= e($photoNo) ?></span>
+                        <img src="<?= e($item['src']) ?>" alt="" loading="lazy">
                     </button>
                 <?php endforeach; ?>
             </div>

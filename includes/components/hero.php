@@ -26,7 +26,7 @@ $venueLine = $w['venueFull'] ?? ($w['venue'] ?? '');
         <div class="heroCard__photo">
             <img
                 class="heroStill__img"
-                src="<?= e(assetUrl('/assets/images/placeholder/01.JPG')) ?>"
+                src="<?= e(assetUrl('/assets/images/placeholder/main.JPG')) ?>"
                 alt="<?= e($g['name'] . ' & ' . $b['name']) ?>"
             >
             <div class="heroCard__handwrite" data-hero-handwrite aria-label="Happy Wedding Day">

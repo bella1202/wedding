@@ -33,7 +33,7 @@ $pageTitle = '웨딩무드 · About';
 
     <figure class="aboutPage__art">
         <img
-            src="<?= e(assetUrl('/assets/images/couple/05-ending.png')) ?>"
+            src="<?= e(assetUrl('/assets/images/about-couple.png')) ?>"
             alt=""
             width="1024"
             height="1024"
