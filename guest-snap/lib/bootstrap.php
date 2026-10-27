@@ -7,7 +7,7 @@ require_once dirname(__DIR__, 2) . '/includes/functions.php';
 
 const SNAP_MAX_FILES = 20;
 const SNAP_MAX_BYTES = 15 * 1024 * 1024;
-const SNAP_MAX_PIXELS = 24_000_000;
+const SNAP_MAX_PIXELS = 30_000_000;
 const SNAP_IMAGE_TYPES = [
     'image/jpeg' => 'jpg',
     'image/png' => 'png',
@@ -80,7 +80,7 @@ function snapValidate(array $file): array
         || $dimensions['mime'] !== $mimeType
         || $dimensions[0] * $dimensions[1] > SNAP_MAX_PIXELS
     ) {
-        throw new InvalidArgumentException('유효한 2,400만 화소 이하 사진을 선택해주세요.');
+        throw new InvalidArgumentException('유효한 3,000만 화소 이하 사진을 선택해주세요.');
     }
 
     $image = @imagecreatefromstring(file_get_contents($filePath));

@@ -291,7 +291,7 @@ $homeUrl = assetUrl('/');
         <ul class="guestSnapNotice__list">
             <li>한 번에 최대 <?= SNAP_MAX_FILES ?>장까지 업로드하실 수 있어요.</li>
             <li>여러 번 나누어 업로드하실 수 있어요.</li>
-            <li>JPEG·PNG·WebP 사진은 장당 15MB, 2,400만 화소 이하로 첨부해주세요.</li>
+            <li>JPEG·PNG·WebP 사진은 장당 15MB, 3,000만 화소 이하로 첨부해주세요.</li>
             <li>HEIC 사진은 JPEG로 변환 후 선택해주세요.</li>
             <li>사진은 신랑·신부만 확인하며 자동 공개되지 않습니다.</li>
             <li>업로드 중 화면이 꺼지면 중단될 수 있으니, 화면이 켜진 상태로 진행해주세요.</li>
