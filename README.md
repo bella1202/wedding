@@ -2,7 +2,7 @@
 
 김병진 & 최숙란 — 시네마틱 모바일 청첩장 (PHP 8+, Vanilla JS, MySQL Guestbook)
 
-**Visual 80% · Playful 20%** · 공개 날짜는 **2027.09.25**만 사용
+**Visual 80% · Playful 20%** · 예식 일정은 `.env`의 `WEDDING_DATE` / `WEDDING_TIME`만 사용
 
 ---
 
@@ -24,6 +24,9 @@ DB_DATABASE=wedding
 DB_USERNAME=root
 DB_PASSWORD=
 DB_CHARSET=utf8mb4
+
+WEDDING_DATE=2027-09-25
+WEDDING_TIME=11:00
 ```
 
 `APP_KEY`는 IP hash 등 서버 내부용이며 HTML에 노출되지 않습니다.  

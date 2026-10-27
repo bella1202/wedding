@@ -13,7 +13,7 @@ $b = $weddingData['bride'];
             <?= e($g['father'] ?? '') ?> · <?= e($g['mother'] ?? '') ?> <span class="couplePanel__of">의</span> <?= e($g['relation'] ?? '') ?>
         </p>
         <figure class="couplePanel__photo">
-            <img src="<?= e(assetUrl('/assets/images/placeholder/02.svg')) ?>" alt="">
+            <img src="<?= e(assetUrl('/assets/images/placeholder/02.JPG')) ?>" alt="">
         </figure>
     </article>
     <article class="couplePanel couplePanel--bride" data-couple-panel>
@@ -24,7 +24,7 @@ $b = $weddingData['bride'];
             <?= e($b['father'] ?? '') ?> · <?= e($b['mother'] ?? '') ?> <span class="couplePanel__of">의</span> <?= e($b['relation'] ?? '') ?>
         </p>
         <figure class="couplePanel__photo">
-            <img src="<?= e(assetUrl('/assets/images/placeholder/03.svg')) ?>" alt="">
+            <img src="<?= e(assetUrl('/assets/images/placeholder/03.JPG')) ?>" alt="">
         </figure>
     </article>
 </section>

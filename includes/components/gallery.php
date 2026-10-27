@@ -1,47 +1,53 @@
 <?php
 /** @var array $weddingData */
-$images = $weddingData['gallery'] ?? [];
-$messages = $weddingData['polaroidMessages'] ?? [];
+$images = array_values($weddingData['gallery'] ?? []);
+$highlights = array_slice($images, 0, 3);
+$strip = array_slice($images, 3);
 ?>
 <section class="scene scene--gallery scene--flow" data-scene="gallery" id="gallery" data-couple-state="date">
     <p class="sceneLabel">갤러리</p>
 
     <div class="stillPair">
-        <?php if (!empty($images[0])): ?>
-            <button type="button" class="stillFrame stillFrame--tall touchBtn" data-gallery-index="0" data-gallery-src="<?= e(assetUrl($images[0])) ?>">
-                <img src="<?= e(assetUrl($images[0])) ?>" alt="PHOTO 01" loading="lazy">
+        <?php if (!empty($highlights[0])): ?>
+            <button type="button" class="stillFrame stillFrame--tall touchBtn" data-gallery-index="0" data-gallery-src="<?= e(assetUrl($highlights[0])) ?>">
+                <img src="<?= e(assetUrl($highlights[0])) ?>" alt="PHOTO 01" loading="lazy">
                 <span class="stillFrame__label">PHOTO 01</span>
             </button>
         <?php endif; ?>
-        <?php if (!empty($images[1])): ?>
-            <button type="button" class="stillFrame stillFrame--tall stillFrame--polaroid touchBtn" data-polaroid-flip aria-label="PHOTO 02 뒤집기">
-                <span class="polaroidCard__inner">
-                    <span class="polaroidCard__face polaroidCard__face--front">
-                        <img src="<?= e(assetUrl($images[1])) ?>" alt="PHOTO 02" loading="lazy">
-                        <span class="stillFrame__label">PHOTO 02</span>
-                    </span>
-                    <span class="polaroidCard__face polaroidCard__face--back"><?= e($messages[0] ?? '우리의 한 장면') ?></span>
-                </span>
+        <?php if (!empty($highlights[1])): ?>
+            <button type="button" class="stillFrame stillFrame--tall touchBtn" data-gallery-index="1" data-gallery-src="<?= e(assetUrl($highlights[1])) ?>">
+                <img src="<?= e(assetUrl($highlights[1])) ?>" alt="PHOTO 02" loading="lazy">
+                <span class="stillFrame__label">PHOTO 02</span>
             </button>
         <?php endif; ?>
     </div>
 
-    <?php if (!empty($images[2])): ?>
-        <button type="button" class="stillFrame stillFrame--full touchBtn" data-gallery-index="1" data-gallery-src="<?= e(assetUrl($images[2])) ?>">
-            <img src="<?= e(assetUrl($images[2])) ?>" alt="PHOTO 03" loading="lazy">
+    <?php if (!empty($highlights[2])): ?>
+        <button type="button" class="stillFrame stillFrame--full touchBtn" data-gallery-index="2" data-gallery-src="<?= e(assetUrl($highlights[2])) ?>">
+            <img src="<?= e(assetUrl($highlights[2])) ?>" alt="PHOTO 03" loading="lazy">
             <span class="stillFrame__label">PHOTO 03</span>
         </button>
     <?php endif; ?>
 
-    <?php if (!empty($images)): ?>
+    <?php if (!empty($strip)): ?>
         <div class="filmStrip" data-film-strip>
             <p class="filmStrip__label">사진 · 옆으로 넘겨보세요</p>
             <div class="filmStrip__track" data-film-track>
-                <?php foreach ($images as $i => $src): ?>
-                    <figure class="filmStrip__frame">
-                        <img src="<?= e(assetUrl($src)) ?>" alt="PHOTO <?= sprintf('%02d', $i + 1) ?>">
-                        <figcaption>PHOTO <?= sprintf('%02d', $i + 1) ?></figcaption>
-                    </figure>
+                <?php foreach ($strip as $i => $src): ?>
+                    <?php
+                    $galleryIndex = $i + 3;
+                    $photoNo = sprintf('%02d', $galleryIndex + 1);
+                    ?>
+                    <button
+                        type="button"
+                        class="filmStrip__frame touchBtn"
+                        data-gallery-index="<?= (int) $galleryIndex ?>"
+                        data-gallery-src="<?= e(assetUrl($src)) ?>"
+                        data-gallery-caption="PHOTO <?= e($photoNo) ?>"
+                    >
+                        <img src="<?= e(assetUrl($src)) ?>" alt="PHOTO <?= e($photoNo) ?>">
+                        <span class="filmStrip__caption">PHOTO <?= e($photoNo) ?></span>
+                    </button>
                 <?php endforeach; ?>
             </div>
         </div>

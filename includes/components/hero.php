@@ -3,10 +3,10 @@
 $g = $weddingData['groom'];
 $b = $weddingData['bride'];
 $w = $weddingData['wedding'];
-$dateParts = explode('-', $w['date'] ?? '2027-09-25');
-$month = $dateParts[1] ?? '09';
-$day = $dateParts[2] ?? '25';
-$dateLine = $w['displayDateLine'] ?? '2027. 09. 25. SAT 11:00 AM';
+$dateParts = explode('-', $w['date']);
+$month = $dateParts[1] ?? '';
+$day = $dateParts[2] ?? '';
+$dateLine = $w['displayDateLine'] ?? '';
 $venueLine = $w['venueFull'] ?? ($w['venue'] ?? '');
 ?>
 <div class="cinematicIntro" data-cinematic-intro role="dialog" aria-label="Opening">
@@ -16,7 +16,7 @@ $venueLine = $w['venueFull'] ?? ($w['venue'] ?? '');
             <span class="cinematicIntro__amp">&amp;</span>
             <span><?= e($b['name']) ?></span>
         </p>
-        <p class="cinematicIntro__line cinematicIntro__line--date" data-intro-line>2027.09.25</p>
+        <p class="cinematicIntro__line cinematicIntro__line--date" data-intro-line><?= e($w['displayDateDot'] ?? '') ?></p>
     </div>
     <button type="button" class="cinematicIntro__skip touchBtn" data-intro-skip>건너뛰기</button>
 </div>
@@ -26,7 +26,7 @@ $venueLine = $w['venueFull'] ?? ($w['venue'] ?? '');
         <div class="heroCard__photo">
             <img
                 class="heroStill__img"
-                src="<?= e(assetUrl('/assets/images/placeholder/01.svg')) ?>"
+                src="<?= e(assetUrl('/assets/images/placeholder/01.JPG')) ?>"
                 alt="<?= e($g['name'] . ' & ' . $b['name']) ?>"
             >
             <div class="heroCard__handwrite" data-hero-handwrite aria-label="Happy Wedding Day">

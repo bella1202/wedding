@@ -1,5 +1,7 @@
 <?php
 
+$schedule = weddingSchedule();
+
 return [
     'groom' => [
         'name' => '김병진',
@@ -20,17 +22,19 @@ return [
     ],
 
     'wedding' => [
-        'date' => '2027-09-25',
-        'day' => '토요일',
-        'dayEn' => 'SATURDAY',
-        'time' => '11:00',
-        'displayTime' => '오전 11시',
-        'displayTimeEn' => '11:00 AM',
+        'date' => $schedule['date'],
+        'day' => $schedule['day'],
+        'dayEn' => $schedule['dayEn'],
+        'time' => $schedule['time'],
+        'displayTime' => $schedule['displayTime'],
+        'displayTimeEn' => $schedule['displayTimeEn'],
+        'displayDateLine' => $schedule['displayDateLine'],
+        'displayDateDot' => $schedule['displayDateDot'],
+        'datetime' => $schedule['datetime'],
         'venue' => '더컨벤션 신사',
         'venueFull' => '더컨벤션 신사 4층 그랜드볼룸홀',
         'venueEn' => 'THE CONVENTION SINSA',
         'address' => '서울 강남구 강남대로 652',
-        'displayDateLine' => '2027. 09. 25. SAT 11:00 AM',
     ],
 
     'invitation' => [
@@ -55,13 +59,12 @@ return [
     ],
 
     'gallery' => [
-        '/assets/images/placeholder/01.svg',
-        '/assets/images/placeholder/02.svg',
-        '/assets/images/placeholder/03.svg',
-    ],
-
-    'polaroidMessages' => [
-        '우리의 한 장면',
+        '/assets/images/placeholder/01.JPG',
+        '/assets/images/placeholder/02.JPG',
+        '/assets/images/placeholder/03.JPG',
+        '/assets/images/placeholder/04.JPG',
+        '/assets/images/placeholder/05.JPG',
+        '/assets/images/placeholder/06.JPG',
     ],
 
     'outfit' => [
@@ -103,7 +106,7 @@ return [
 
     'contact' => [
         'groom' => [
-            'father' => '',
+            'father' => '01054001236',
             'mother' => '01045210365',
             'self' => '01090305236',
         ],

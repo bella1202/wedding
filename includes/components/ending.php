@@ -1,8 +1,7 @@
 <?php
 /** @var array $weddingData */
 $w = $weddingData['wedding'];
-$weddingDate = $w['date'] ?? '2027-09-25';
-$footDate = str_replace('-', '.', $weddingDate);
+$footDate = $w['displayDateDot'] ?? str_replace('-', '.', $w['date']);
 ?>
 <footer class="scene scene--ending scene--full" data-scene="ending" data-couple-state="ending">
     <p class="endingMerge__date"><?= e($footDate) ?></p>

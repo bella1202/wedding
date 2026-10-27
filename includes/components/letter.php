@@ -37,6 +37,6 @@ $closing = $inv['closing'] ?? [];
         <?php endif; ?>
 
         <p class="letterScene__rule" aria-hidden="true"></p>
-        <p class="letterScene__foot">2027.09.25</p>
+        <p class="letterScene__foot"><?= e($weddingData['wedding']['displayDateDot'] ?? '') ?></p>
     </div>
 </section>

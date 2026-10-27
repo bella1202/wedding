@@ -56,7 +56,7 @@
 
             <p><strong>제10조(개인정보 보호 문의)</strong><br>
             개인정보 관련 문의는 웨딩무드 운영팀으로 연락해 주시기 바랍니다.<br>
-            문의: support@weddingmood.kr</p>
+            문의: bella.beng0925@gmail.com</p>
 
             <p><strong>제11조(권익침해 구제)</strong><br>
             개인정보 침해에 대한 신고·상담이 필요하시면 아래 기관에 문의하실 수 있습니다.<br>

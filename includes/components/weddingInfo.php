@@ -3,7 +3,7 @@
 $w = $weddingData['wedding'];
 $g = $weddingData['groom'];
 $b = $weddingData['bride'];
-$weddingDate = $w['date'] ?? '2027-09-25';
+$weddingDate = $w['date'];
 [$weddingYear, $weddingMonth, $weddingDay] = array_map('intval', explode('-', $weddingDate));
 ?>
 <section

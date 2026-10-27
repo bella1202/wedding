@@ -18,13 +18,17 @@
       current = (index + items.length) % items.length;
       var item = items[current];
       var src = item.getAttribute("data-gallery-src");
-      var label = item.querySelector(".stillFrame__label");
+      var labelEl = item.querySelector(".stillFrame__label");
+      var label =
+        item.getAttribute("data-gallery-caption") ||
+        (labelEl ? labelEl.textContent : "") ||
+        "";
       imgEl.style.opacity = "0";
       imgEl.style.transform = "scale(0.97)";
       requestAnimationFrame(function () {
         imgEl.src = src;
-        imgEl.alt = label ? label.textContent : "";
-        if (captionEl && label) captionEl.textContent = label.textContent;
+        imgEl.alt = label;
+        if (captionEl) captionEl.textContent = label;
         imgEl.style.opacity = "1";
         imgEl.style.transform = "scale(1)";
       });

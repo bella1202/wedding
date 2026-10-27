@@ -24,7 +24,7 @@
 | `GUEST_SNAP_GOOGLE_REFRESH_TOKEN` | 최초 연결 도구가 터미널에 출력하는 갱신 토큰 |
 | `GUEST_SNAP_GOOGLE_FOLDER_ID` | 최초 연결 도구가 생성한 비공개 전용 폴더 ID |
 | `APP_KEY` | 기존 서버 비밀 키. 충분히 긴 난수 필수. 운영 중 변경 시 재시도 식별도 바뀜 |
-| `GUEST_SNAP_OPEN_AT` | 기존 오픈 날짜 설정(Asia/Seoul). 기본 결혼식 날짜 적용 |
+| `WEDDING_DATE` | 예식일(Y-m-d, Asia/Seoul). 당일 00:00부터 업로드 오픈 |
 | `DB_*` | 기존 MySQL 연결 설정 재사용 |
 
 실제 인증 정보나 임의 폴더 ID는 코드/예제에 포함하지 않았습니다. `.env`는 저장소 커밋 및 웹 접근 금지, 소유자만 읽을 수 있게 설정합니다.
@@ -120,7 +120,7 @@ php guest-snap/bin/manage.php reconcile
 - 성공: HTTP 200, `{"ok":true,"code":"uploaded","message":"사진이 비공개로 저장되었습니다."}`. 인증 정보와 Drive 파일 ID는 응답에 포함하지 않습니다.
 - 실패: `ok:false`, `code`, `message`. 403은 세션 만료/업로드 비활성, 405는 메서드 오류, 413은 요청/PHP 크기 제한, 422는 입력 검증 실패, 429는 요청 제한/처리 중, 503은 저장소 장애/설정 미완료입니다. 429에는 `Retry-After: 30`과 `retryAfter:30`도 반환합니다.
 - 연결 오류 또는 403/429/503이면 나머지 전송을 멈추고 미전송 사진을 표시합니다. 같은 화면에서 다시 누르면 완료된 사진을 제외하고 기존 식별자로 재시도합니다.
-- `GUEST_SNAP_ENABLED=1` 및 `GUEST_SNAP_OPEN_AT` 도달 조건은 화면과 API 모두 적용됩니다. Google 인증 값·폴더 ID와 DB 초기화가 준비되어야 실제 저장됩니다.
+- `GUEST_SNAP_ENABLED=1` 및 `WEDDING_DATE` 당일 00:00 도달 조건은 화면과 API 모두 적용됩니다. Google 인증 값·폴더 ID와 DB 초기화가 준비되어야 실제 저장됩니다.
 
 ## 이름·전화번호 저장
 

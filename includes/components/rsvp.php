@@ -7,7 +7,7 @@ $loc = $weddingData['location'] ?? [];
 
 $venueLabel = $w['venueFull'] ?? ($loc['name'] ?? ($w['venue'] ?? ''));
 
-$weddingDate = $w['date'] ?? '2027-09-25';
+$weddingDate = $w['date'];
 [$yy, $mm, $dd] = array_map('intval', explode('-', $weddingDate));
 $dateLine = sprintf(
     '%d년 %d월 %d일 %s %s',

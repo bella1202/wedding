@@ -21,7 +21,7 @@ $kakaoShareTemplateId = env('KAKAO_SHARE_TEMPLATE_ID');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f7f5f2">
-    <meta name="description" content="김병진 &amp; 최숙란 결혼식에 초대합니다. 2027.09.25 더컨벤션 신사">
+    <meta name="description" content="<?= e($g['name'] . ' & ' . $b['name'] . ' 결혼식에 초대합니다. ' . ($w['displayDateDot'] ?? '') . ' ' . ($w['venue'] ?? '')) ?>">
     <title><?= e($pageTitle) ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
