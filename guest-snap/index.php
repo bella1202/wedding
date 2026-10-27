@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-require dirname(__DIR__) . '/includes/env.php';
-require dirname(__DIR__) . '/includes/functions.php';
+require __DIR__ . '/lib/bootstrap.php';
+snapSession();
+header('Cache-Control: no-store');
 $weddingData = require dirname(__DIR__) . '/includes/data.php';
 
 $g = $weddingData['groom'];
@@ -10,7 +11,7 @@ $b = $weddingData['bride'];
 $w = $weddingData['wedding'];
 $openAt = guestSnapOpenAt($w);
 $openLabel = guestSnapOpenLabel($w);
-$canUpload = guestSnapCanUpload($w);
+$canUpload = guestSnapCanUpload($w) && env('GUEST_SNAP_ENABLED', '0') === '1';
 
 $pageTitle = '게스트 스냅 · ' . ($g['name'] ?? '') . ' ♥ ' . ($b['name'] ?? '');
 $homeUrl = assetUrl('/');
@@ -42,6 +43,8 @@ $homeUrl = assetUrl('/');
     data-guest-snap
     data-open-at="<?= e($openAt->format('c')) ?>"
     data-can-upload="<?= $canUpload ? '1' : '0' ?>"
+    data-max-files="<?= SNAP_MAX_FILES ?>"
+    data-max-bytes="<?= SNAP_MAX_BYTES ?>"
 >
     <div class="guestSnapHero" aria-hidden="true">
         <span class="guestSnapSpark guestSnapSpark--a"></span>
@@ -174,24 +177,47 @@ $homeUrl = assetUrl('/');
 
     <div class="guestSnapFormWrap<?= $canUpload ? '' : ' isLocked' ?>">
         <?php if (!$canUpload): ?>
-            <div class="guestSnapFormWrap__overlay" aria-hidden="true">
-                <p><?= e($openLabel) ?>에 오픈됩니다!</p>
+            <div class="guestSnapFormWrap__overlay" role="status">
+                <p><?= guestSnapCanUpload($w) ? '사진 업로드를 준비 중입니다.' : e($openLabel) . '에 오픈됩니다!' ?></p>
             </div>
         <?php endif; ?>
 
-        <form class="guestSnapForm" data-guest-snap-form novalidate>
+        <form class="guestSnapForm" data-guest-snap-form method="post" enctype="multipart/form-data" novalidate action="<?= e(assetUrl('/guest-snap/api/upload.php')) ?>">
+            <input type="hidden" name="csrf" value="<?= e($_SESSION['snap_csrf']) ?>">
             <div class="guestSnapForm__card">
+                <div class="guestSnapForm__heading">
+                    <h2>함께 담은 순간을 보내주세요</h2>
+                    <p>사진은 신랑·신부만 확인할 수 있어요.</p>
+                </div>
                 <label class="guestSnapForm__field">
+                    <span>성함 <small>필수</small></span>
                     <input
                         type="text"
                         name="name"
                         maxlength="20"
                         autocomplete="name"
                         placeholder="성함을 입력해주세요."
+                        required
                         aria-label="성함"
-                        <?= $canUpload ? 'required' : 'disabled' ?>
+                        <?= $canUpload ? '' : 'disabled' ?>
                     >
                 </label>
+
+                <label class="guestSnapForm__field">
+                    <span>전화번호 <small>필수</small></span>
+                    <input
+                        type="tel"
+                        name="phone"
+                        maxlength="30"
+                        autocomplete="tel"
+                        inputmode="tel"
+                        placeholder="010-1234-5678"
+                        aria-label="전화번호"
+                        required
+                        <?= $canUpload ? '' : 'disabled' ?>
+                    >
+                </label>
+                <p class="guestSnapForm__help">이름과 전화번호는 사진 확인 및 연락에 사용하며, 저장 파일명에도 포함됩니다.</p>
 
                 <div class="guestSnapForm__field">
                     <label
@@ -201,10 +227,11 @@ $homeUrl = assetUrl('/');
                         <input
                             class="guestSnapDrop__input"
                             type="file"
-                            name="files"
-                            accept="image/*,video/*"
+                            name="photo"
+                            accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                             multiple
                             data-guest-snap-files
+                            aria-describedby="guestSnapFileHelp"
                             <?= $canUpload ? '' : 'disabled' ?>
                         >
                         <span class="guestSnapDrop__plus" aria-hidden="true">
@@ -212,29 +239,36 @@ $homeUrl = assetUrl('/');
                                 <path d="M4 5.75A1.75 1.75 0 015.75 4h12.5A1.75 1.75 0 0120 5.75v12.5A1.75 1.75 0 0118.25 20H5.75A1.75 1.75 0 014 18.25V5.75zm2.2 11.5h11.6l-3.55-4.15a.9.9 0 00-1.38-.04l-2.12 2.3-1.28-1.4a.9.9 0 00-1.36.02L6.2 17.25zM9 10.1a1.85 1.85 0 100-3.7 1.85 1.85 0 000 3.7z"/>
                             </svg>
                         </span>
-                        <span class="guestSnapDrop__label">클릭하여<br>사진이나 영상을 업로드해주세요.</span>
+                        <span class="guestSnapDrop__label">클릭하여<br>사진을 선택해주세요.</span>
                     </label>
+                    <p class="guestSnapForm__help" id="guestSnapFileHelp">최대 8장 · 장당 15MB · JPEG, PNG, WebP</p>
+                    <p class="guestSnapForm__selection" data-guest-snap-selection aria-live="polite">아직 선택한 사진이 없어요.</p>
                     <ul class="guestSnapDrop__preview" data-guest-snap-preview hidden></ul>
                 </div>
             </div>
 
-            <p class="guestSnapForm__error" data-guest-snap-error hidden></p>
+            <p class="guestSnapForm__error" data-guest-snap-error role="status" aria-live="polite" hidden></p>
+            <progress data-guest-snap-progress max="100" value="0" aria-label="사진 전송 진행률" hidden></progress>
 
             <button
                 type="submit"
                 class="guestSnapForm__submit touchBtn"
                 data-guest-snap-submit
                 <?= $canUpload ? '' : 'disabled' ?>
-            >업로드</button>
+            >사진 올리기</button>
+            <button type="button" class="guestSnapForm__another touchBtn" data-guest-snap-another hidden>다른 사진 더 올리기</button>
+            <noscript><p class="guestSnapForm__help">사진 업로드를 위해 브라우저의 JavaScript를 켜주세요.</p></noscript>
         </form>
     </div>
 
     <section class="guestSnapNotice" aria-labelledby="guestSnapNoticeTitle">
         <h2 class="guestSnapNotice__title" id="guestSnapNoticeTitle">업로드 주의사항</h2>
         <ul class="guestSnapNotice__list">
-            <li>한 번에 최대 100개까지 업로드하실 수 있어요.</li>
+            <li>한 번에 최대 8장까지 업로드하실 수 있어요.</li>
             <li>여러 번 나누어 업로드하실 수 있어요.</li>
-            <li>영상은 파일당 200MB 이하만 첨부하실 수 있어요.</li>
+            <li>JPEG·PNG·WebP 사진은 장당 15MB, 2,400만 화소 이하로 첨부해주세요.</li>
+            <li>HEIC 사진은 JPEG로 변환 후 선택해주세요.</li>
+            <li>사진은 신랑·신부만 확인하며 자동 공개되지 않습니다.</li>
             <li>업로드 중 화면이 꺼지면 중단될 수 있으니, 화면이 켜진 상태로 진행해주세요.</li>
         </ul>
     </section>

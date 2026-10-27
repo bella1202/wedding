@@ -532,7 +532,7 @@ body {
   color: rgba(56, 55, 55, 0.78);
 }
 
-.guestSnapForm__field input[type="text"] {
+.guestSnapForm__field input:is([type="text"], [type="tel"]) {
   width: 100%;
   border: 1px solid rgba(56, 55, 55, 0.12);
   border-radius: 8px;
@@ -544,12 +544,12 @@ body {
   outline: none;
 }
 
-.guestSnapForm__field input[type="text"]:focus {
+.guestSnapForm__field input:is([type="text"], [type="tel"]):focus {
   border-color: rgba(224, 145, 163, 0.55);
   background: #fff;
 }
 
-.guestSnapForm__field input[type="text"]:disabled {
+.guestSnapForm__field input:is([type="text"], [type="tel"]):disabled {
   opacity: 0.7;
 }
 
@@ -695,3 +695,39 @@ body {
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 }
+
+.guestSnapUploadLabel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #fff;
+  background: rgba(34,34,34,.7);
+  overflow-wrap: anywhere;
+  max-height: 70%;
+  overflow: auto;
+}
+.guestSnapDrop__remove { width: 28px; height: 28px; font-size: 20px; }
+[data-guest-snap-progress] { width: 100%; margin-top: 16px; accent-color: var(--accent); }
+.guestSnapDrop__preview[hidden], [data-guest-snap-progress][hidden] { display: none; }
+
+.guestSnapForm__heading { margin-bottom: 22px; }
+.guestSnapForm__heading h2 { margin: 0 0 8px; font-size: 17px; font-weight: 500; }
+.guestSnapForm__heading p,
+.guestSnapForm__help,
+.guestSnapForm__selection { font-size: 12px; line-height: 1.6; color: var(--muted); }
+.guestSnapForm__heading p { margin: 0; }
+.guestSnapForm__field small { margin-left: 5px; color: var(--muted); font-weight: 400; }
+.guestSnapForm__help { margin: 10px 0 0; }
+.guestSnapForm__selection { margin: 12px 0 0; color: var(--ink); }
+.guestSnapForm__error:not([hidden]) { padding: 12px; border-radius: 12px; background: var(--accent-soft); line-height: 1.6; }
+.guestSnapForm__error[data-kind="success"] { color: #37654c; background: #edf5ef; }
+.guestSnapForm__error[data-kind="error"] { color: #9a4444; background: #fbefef; }
+.guestSnapDrop__thumb[data-state="success"] { outline: 2px solid #77a58a; outline-offset: -2px; }
+.guestSnapDrop__thumb[data-state="error"] { outline: 2px solid #ca8585; outline-offset: -2px; }
+.guestSnapForm__another { width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent); font: inherit; font-size: 14px; }
+.guestSnapForm__another[hidden] { display: none; }
+.guestSnapDrop:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }

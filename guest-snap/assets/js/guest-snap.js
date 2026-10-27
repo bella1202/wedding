@@ -1,169 +1,295 @@
-(function () {
-  "use strict";
+(() => {
+  'use strict';
 
-  var MAX_FILES = 8;
+  const UPLOAD_TIMEOUT_MS = 150_000;
 
-  function qs(sel, root) {
-    return (root || document).querySelector(sel);
+  function createUploadId() {
+    return Array.from(
+      crypto.getRandomValues(new Uint8Array(16)),
+      byte => byte.toString(16).padStart(2, '0')
+    ).join('');
   }
 
-  function setError(el, msg) {
-    if (!el) return;
-    if (!msg) {
-      el.hidden = true;
-      el.textContent = "";
-      return;
-    }
-    el.hidden = false;
-    el.textContent = msg;
-  }
-
-  function revokePreviewUrls(preview) {
-    if (!preview) return;
-    Array.prototype.forEach.call(preview.querySelectorAll("[data-preview-url]"), function (el) {
-      var url = el.getAttribute("data-preview-url");
-      if (url) URL.revokeObjectURL(url);
-    });
-  }
-
-  function syncInputFiles(fileInput, files) {
-    if (!fileInput || typeof DataTransfer === "undefined") return;
-    var dt = new DataTransfer();
-    files.forEach(function (file) {
-      dt.items.add(file);
-    });
-    fileInput.files = dt.files;
-  }
-
-  function initGuestSnap() {
-    var root = qs("[data-guest-snap]");
+  document.addEventListener('DOMContentLoaded', () => {
+    const root = document.querySelector('[data-guest-snap]');
     if (!root) return;
 
-    var canUpload = root.getAttribute("data-can-upload") === "1";
-    var form = qs("[data-guest-snap-form]", root);
-    var fileInput = qs("[data-guest-snap-files]", root);
-    var preview = qs("[data-guest-snap-preview]", root);
-    var errorEl = qs("[data-guest-snap-error]", root);
-    var submitBtn = qs("[data-guest-snap-submit]", root);
-    var selectedFiles = [];
+    const form = root.querySelector('form');
+    const fileInput = root.querySelector('[data-guest-snap-files]');
+    const preview = root.querySelector('[data-guest-snap-preview]');
+    const status = root.querySelector('[data-guest-snap-error]');
+    const submitButton = root.querySelector('[data-guest-snap-submit]');
+    const progress = root.querySelector('[data-guest-snap-progress]');
+    const nameInput = form.elements.name;
+    const phoneInput = form.elements.phone;
+    const selection = root.querySelector('[data-guest-snap-selection]');
+    const anotherButton = root.querySelector('[data-guest-snap-another]');
+    const maxFiles = Number(root.dataset.maxFiles) || 8;
+    const maxBytes = Number(root.dataset.maxBytes) || 15 * 1024 * 1024;
+
+    let items = [];
+    let busy = false;
+    let batchId = createUploadId();
+
+    function showMessage(text, kind = 'info') {
+      status.dataset.kind = kind;
+      status.textContent = text;
+      status.hidden = !text;
+    }
+
+    function setBusy(value) {
+      busy = value;
+      submitButton.disabled = value || !items.some(item => !item.done);
+      submitButton.textContent = value ? '사진을 저장하고 있어요…' : '사진 올리기';
+      form.setAttribute('aria-busy', String(value));
+      anotherButton.hidden = value || !items.length || items.some(item => !item.done);
+      fileInput.disabled = value;
+      nameInput.disabled = value;
+      phoneInput.disabled = value;
+      progress.hidden = !value;
+      renderPreview();
+    }
 
     function renderPreview() {
-      if (!preview || !fileInput) return;
-      revokePreviewUrls(preview);
-      preview.innerHTML = "";
+      preview.replaceChildren();
+      preview.hidden = !items.length;
+      const totalBytes = items.reduce((sum, item) => sum + item.file.size, 0);
+      selection.textContent = items.length
+        ? `${items.length}/${maxFiles}장 선택 · ${(totalBytes / 1024 / 1024).toFixed(1)}MB`
+        : '아직 선택한 사진이 없어요.';
+      if (!busy) submitButton.disabled = root.dataset.canUpload !== '1' || !items.some(item => !item.done);
 
-      if (!selectedFiles.length) {
-        preview.hidden = true;
-        syncInputFiles(fileInput, []);
-        return;
-      }
+      items.forEach(item => {
+        const thumbnail = document.createElement('li');
+        thumbnail.className = 'guestSnapDrop__thumb';
 
-      preview.hidden = false;
-      selectedFiles.forEach(function (file, index) {
-        var li = document.createElement("li");
-        li.className = "guestSnapDrop__thumb";
+        const image = document.createElement('img');
+        image.src = item.url;
+        image.alt = item.file.name;
+        image.onerror = () => { image.hidden = true; };
 
-        var url = URL.createObjectURL(file);
-        var isVideo = file.type.indexOf("video/") === 0;
-        var media;
+        const label = document.createElement('span');
+        label.className = 'guestSnapUploadLabel';
+        label.textContent = `${item.file.name} · ${item.done ? '저장 완료' : item.error || item.phase || '대기'}`;
+        thumbnail.dataset.state = item.done ? 'success' : item.error ? 'error' : 'pending';
+        item.label = label;
 
-        if (isVideo) {
-          media = document.createElement("video");
-          media.src = url;
-          media.muted = true;
-          media.playsInline = true;
-          media.preload = "metadata";
-          media.setAttribute("data-preview-url", url);
-          li.appendChild(media);
-
-          var badge = document.createElement("span");
-          badge.className = "guestSnapDrop__videoBadge";
-          badge.setAttribute("aria-hidden", "true");
-          badge.innerHTML =
-            '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 6.8v10.4L18 12 8 6.8z"/></svg>';
-          li.appendChild(badge);
-        } else {
-          media = document.createElement("img");
-          media.src = url;
-          media.alt = "";
-          media.setAttribute("data-preview-url", url);
-          li.appendChild(media);
-        }
-
-        var removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.className = "guestSnapDrop__remove touchBtn";
-        removeBtn.setAttribute("aria-label", "삭제");
-        removeBtn.innerHTML =
-          '<svg viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-        removeBtn.addEventListener("click", function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          selectedFiles.splice(index, 1);
-          syncInputFiles(fileInput, selectedFiles);
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'guestSnapDrop__remove';
+        removeButton.textContent = '×';
+        removeButton.setAttribute('aria-label', `${item.file.name} 삭제`);
+        removeButton.disabled = busy;
+        removeButton.onclick = () => {
+          URL.revokeObjectURL(item.url);
+          items = items.filter(candidate => candidate !== item);
           renderPreview();
-        });
-        li.appendChild(removeBtn);
-        preview.appendChild(li);
-      });
+        };
 
-      syncInputFiles(fileInput, selectedFiles);
+        thumbnail.append(image, label, removeButton);
+        preview.append(thumbnail);
+      });
     }
 
-    if (fileInput && preview) {
-      fileInput.addEventListener("change", function () {
-        var incoming = Array.from(fileInput.files || []);
-        if (!incoming.length) return;
+    fileInput.addEventListener('change', () => {
+      if (busy) return;
 
-        incoming.forEach(function (file) {
-          if (selectedFiles.length >= MAX_FILES) return;
-          selectedFiles.push(file);
-        });
+      if (items.length && items.every(item => item.done)) {
+        items.forEach(item => URL.revokeObjectURL(item.url));
+        items = [];
+        batchId = createUploadId();
+      }
 
-        if (incoming.length && selectedFiles.length >= MAX_FILES) {
-          setError(errorEl, "최대 " + MAX_FILES + "개까지 업로드할 수 있어요.");
-        } else {
-          setError(errorEl, "");
+      let warning = '';
+
+      Array.from(fileInput.files).forEach(file => {
+        if (items.length >= maxFiles) {
+          warning = '한 번에 최대 8장까지 선택해주세요.';
+          return;
         }
 
-        renderPreview();
+        if (!file.size || file.size > maxBytes) {
+          warning = '사진은 장당 15MB 이하로 선택해주세요.';
+          return;
+        }
+
+        if (!/\.(jpe?g|png|webp)$/i.test(file.name)) {
+          warning = 'JPEG·PNG·WebP 사진을 선택해주세요. HEIC는 JPEG로 변환해주세요.';
+          return;
+        }
+
+        items.push({
+          file,
+          id: createUploadId(),
+          url: URL.createObjectURL(file),
+          done: false,
+          error: '',
+        });
+      });
+
+      fileInput.value = '';
+      showMessage(warning, warning ? 'error' : 'info');
+      submitButton.textContent = '사진 올리기';
+      anotherButton.hidden = true;
+      renderPreview();
+    });
+
+    function uploadPhoto(item, index, total) {
+      item.error = '';
+      item.phase = '전송 준비 중';
+      renderPreview();
+      showMessage(`${index + 1}/${total}장 · 전송 준비 중`);
+
+      return new Promise(resolve => {
+        // XHR exposes upload progress, including on mobile browsers.
+        const request = new XMLHttpRequest();
+        request.open('POST', form.action);
+        request.timeout = UPLOAD_TIMEOUT_MS;
+
+        const body = new FormData();
+        body.append('photo', item.file);
+        body.append('name', nameInput.value.trim());
+        body.append('phone', phoneInput.value.trim());
+        body.append('csrf', form.elements.csrf.value);
+        body.append('batch', batchId);
+        body.append('item', item.id);
+
+        request.upload.onprogress = event => {
+          if (!event.lengthComputable) return;
+
+          progress.value = Math.round(event.loaded / event.total * 100);
+          const saving = progress.value === 100 ? ' · 저장 확인 중' : '';
+          item.phase = progress.value === 100 ? '저장 확인 중' : `${progress.value}% 전송`;
+          item.label.textContent = `${item.file.name} · ${item.phase}`;
+          showMessage(`${index + 1}/${total}장 · ${progress.value}% 전송${saving}`);
+        };
+
+        request.onload = () => {
+          let response;
+
+          try {
+            const payload = JSON.parse(request.responseText);
+            response = payload && typeof payload === 'object' ? payload : {};
+          } catch (_) {
+            response = {};
+          }
+
+          item.done = request.status === 200 && response.ok === true;
+          item.phase = '';
+          item.stopBatch = request.status === 429 || request.status === 403 || request.status === 503;
+          item.error = item.done
+            ? ''
+            : typeof response.message === 'string'
+              ? response.message
+              : '저장을 확인하지 못했습니다. 다시 시도해주세요.';
+          resolve();
+        };
+
+        const handleConnectionFailure = () => {
+          item.phase = '';
+          item.stopBatch = true;
+          item.error = '연결이 끊겼습니다. 같은 화면에서 재시도해주세요.';
+          resolve();
+        };
+
+        request.onerror = handleConnectionFailure;
+        request.ontimeout = handleConnectionFailure;
+        request.onabort = handleConnectionFailure;
+        try {
+          request.send(body);
+        } catch (_) {
+          handleConnectionFailure();
+        }
       });
     }
 
-    if (!form) return;
+    function showUploadResult() {
+      const succeeded = items.filter(item => item.done).length;
+      const failed = items.length - succeeded;
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      setError(errorEl, "");
-
-      if (!canUpload) {
-        setError(errorEl, "아직 업로드 오픈 전이에요.");
+      if (!failed) {
+        showMessage(`${succeeded}장 모두 비공개로 저장되었습니다. 감사합니다!`, 'success');
+        submitButton.textContent = '업로드 완료';
         return;
       }
 
-      var nameInput = form.querySelector('input[name="name"]');
-      var name = nameInput ? String(nameInput.value || "").trim() : "";
-      if (!name || name.length > 20) {
-        setError(errorEl, "성함은 1~20자로 입력해주세요.");
+      showMessage(succeeded
+        ? `${succeeded}장 성공, ${failed}장 실패. 실패한 사진만 다시 시도할 수 있어요.`
+        : '사진을 저장하지 못했습니다. 사진별 안내를 확인하고 다시 시도해주세요.',
+        'error'
+      );
+      submitButton.textContent = '실패한 사진 재시도';
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (busy || root.dataset.canUpload !== '1') return;
+
+      if (!items.length) {
+        showMessage('사진을 선택해주세요.');
         return;
       }
 
-      if (!selectedFiles.length) {
-        setError(errorEl, "사진 또는 영상을 선택해주세요.");
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+
+      if (!/^[\p{L}\p{M}\p{N} .’'_-]{1,20}$/u.test(name) || !/[\p{L}\p{N}]/u.test(name)) {
+        showMessage('성함을 1~20자로 입력해주세요. 특수문자는 사용할 수 없습니다.', 'error');
+        nameInput.focus();
         return;
       }
 
-      // Placeholder: Google Drive API upload will be wired here later.
-      if (submitBtn) submitBtn.disabled = true;
-      window.setTimeout(function () {
-        setError(
-          errorEl,
-          "업로드 연동은 준비 중이에요. 예식 당일 Google Drive 업로드가 연결됩니다."
-        );
-        if (submitBtn) submitBtn.disabled = false;
-      }, 400);
+      if (phone.length > 30 || !/^\+?[0-9() -]+$/.test(phone) || !/^[0-9]{8,15}$/.test(phone.replace(/[^0-9]/g, ''))) {
+        showMessage('전화번호는 숫자 8~15자리로 입력해주세요.', 'error');
+        phoneInput.focus();
+        return;
+      }
+
+      const pending = items.filter(item => !item.done);
+
+      if (!pending.length) {
+        showMessage('모든 사진이 저장되었습니다. 새 사진을 선택할 수 있어요.');
+        return;
+      }
+
+      setBusy(true);
+
+      try {
+        for (let index = 0; index < pending.length; index++) {
+          progress.value = 0;
+          await uploadPhoto(pending[index], index, pending.length);
+          renderPreview();
+
+          if (pending[index].stopBatch) {
+            pending.slice(index + 1).forEach(item => {
+              item.error = '전송 대기 · 연결 상태와 안내를 확인한 뒤 다시 시도해주세요.';
+            });
+            break;
+          }
+        }
+      } finally {
+        setBusy(false);
+        showUploadResult();
+      }
     });
-  }
 
-  document.addEventListener("DOMContentLoaded", initGuestSnap);
+    anotherButton.addEventListener('click', () => {
+      if (busy) return;
+      items.forEach(item => URL.revokeObjectURL(item.url));
+      items = [];
+      batchId = createUploadId();
+      showMessage('');
+      setBusy(false);
+      fileInput.click();
+    });
+
+    renderPreview();
+
+    window.addEventListener('beforeunload', event => {
+      if (busy) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+  });
 })();
